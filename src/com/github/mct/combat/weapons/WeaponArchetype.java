@@ -1,4 +1,6 @@
 package com.github.mct.combat.weapons;
 
-public enum WeaponArchetype {
+//Extending Enums is impossible in Java :/
+public enum WeaponArchetype{
+    SHORT, MEDIUM, LONG
 }

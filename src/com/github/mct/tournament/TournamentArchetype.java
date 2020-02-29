@@ -1,4 +1,7 @@
 package com.github.mct.tournament;
+
+import com.github.mct.combat.weapons.WeaponArchetype;
+
 /**
  * TournamentArchetype contains an enumeration of the SubTournaments possible.
  * SHORT: A short-weapon tournament.
