@@ -20,13 +20,13 @@ public class Fighter{
     private int attackRating;       // attack rating of fighter
     private int defenseRating;      // defense rating of fighter
     private String name;            // name of fighter
-    private WeaponArchetype weapon; // fighter's weapon
+    private Weapon weapon; // fighter's weapon
     Random rand;                    // random number generator for dice rolling
 
     /**
      * Constructor for a fighter that sets the weapon and seeds the random number generator for rolling the dice.
      */
-    public Fighter(WeaponArchetype Weapon)
+    public Fighter(Weapon Weapon)
     {
         rand = new Random();            // seed random number generator
         weapon = Weapon;                // set fighter's weapon
