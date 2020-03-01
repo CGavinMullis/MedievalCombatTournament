@@ -3,11 +3,13 @@ package com.github.mct.tournament;
 //Import Random Generator
 import java.util.Random;
 
+//Import WeaponArchetype Class
+import com.github.mct.combat.weapons.WeaponArchetype;
+
 //Import Fighter Class
 import com.github.mct.combat.Fighter;
 
 //Import Jester Class
-import com.github.mct.combat.weapons.WeaponArchetype;
 import com.github.mct.ui.Jester;
 
 /**
@@ -55,6 +57,9 @@ public class Match {
         this.jester = new Jester();
     }
 
+    /**
+     * This function begins the match and signals Jester to Comment throughout.
+     */
     public void playMatch()
     {
         //Start Match
@@ -68,6 +73,9 @@ public class Match {
 
     }
 
+    /**
+     * This function signals Jester that the match is halfway through
+     */
     public void signalMiddleToJester()
     {
         this.jester.commentOnMiddle();
