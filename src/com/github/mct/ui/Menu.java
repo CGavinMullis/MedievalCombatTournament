@@ -19,7 +19,7 @@ public class Menu {
 
     private Tournament currTourn;
 
-    private Jester jester;
+    private Jester currJester;
 
     private static Menu single_instance = null;
 
@@ -31,7 +31,13 @@ public class Menu {
 
     protected String windowBorder;
 
+    protected String windowDivider;
+
+    protected String windowContent;
+
     protected ArrayList<String> menuOptions;
+
+    protected String currMenu;
 
 
     private Menu()
@@ -40,13 +46,10 @@ public class Menu {
         emptySpace = new String(new char[MAX_WIDTH - 3]).replace("\0", " ");
         lineTemplate = '|' + emptySpace + "|\n";
         windowBorder = new String(new char[MAX_WIDTH - 3]).replace("\0", "-");
+        windowDivider = new String(new char[MAX_WIDTH - 3]).replace("\0", "_");
         menuOptions = new ArrayList<String>();
-
-        menuOptions.add("Begin the Tournament!");
-        menuOptions.add("Exit");
-
+        defaultMenu();
         update();
-        //for(;;);
     }
 
     public static Menu getInstance()
@@ -62,13 +65,78 @@ public class Menu {
 
     private void print()
     {
-        String menuContent = new String();
+        String content = new String();
         String title;
-        String buttonHeader = "_____________________";
+        String buttonHeader = new String(new char[MAX_WIDTH - 3]).replace("\0", "/");
+
         int titleSpacing = 3;
         int counter = 0;
 
 
+        content = stringInsert(lineTemplate, windowBorder, 1);
+        content += windowContent;
+
+        for (int i = 0 ; i < titleSpacing ; i++ ) {
+            content += lineTemplate;
+        }
+
+        content += stringInsert(lineTemplate, windowDivider, 1);
+        content += stringInsert(lineTemplate, buttonHeader, 1);
+
+        if (menuOptions != null && menuOptions.size() != 0) {
+            for (String button : menuOptions) {
+                counter++;
+                content += stringInsert(lineTemplate, counter + ") " + button, MAX_WIDTH / 16);
+            }
+
+
+            content += stringInsert(lineTemplate, windowBorder, 1);
+            content += "| Button Select(1-" + (counter) + "): ";
+        }
+        clearConsole();
+        System.out.print(content);
+
+    }
+
+    private void optionSelect(String menu)
+    {
+        Scanner in = new Scanner(System.in);
+        String selection = in.nextLine();
+
+        if(!isNumeric(selection))
+        {
+            System.out.print("Input must be an integer...\n");
+            promptEnterKey();
+            update();
+            return;
+        }
+
+        switch (menu) {
+            case "main":
+            switch (selection) {
+                case "1":
+                    menuOptions.clear();
+                    currJester = new Jester();
+                    print();
+                    currJester.commentOnStart();
+                    promptEnterKey();
+                    break;
+                case "2":
+                    return;
+                default:
+                    System.out.println("| Button selection must be an integer value from 1 through " + menuOptions.size());
+                    promptEnterKey();
+
+            }
+            break;
+        }
+
+        update();
+    }
+
+    private void defaultMenu()
+    {
+        String title;
 
         String titleA = "         ,---.   ,'|\"\\   ,-.,---..-.   .-..--.  ,-.    ";
         String titleB = "|\\    /| | .-'   | |\\ \\  |(|| .-' \\ \\ / // /\\ \\ | |    ";
@@ -118,33 +186,11 @@ public class Menu {
         title += stringInsert(lineTemplate, titleF, (MAX_WIDTH/2) - (titleF.length()/2)-1);
         title += stringInsert(lineTemplate, titleG, (MAX_WIDTH/2) - (titleG.length()/2)-1);
 
-        menuContent = stringInsert(lineTemplate, windowBorder, 1);
-        menuContent += title;
+        windowContent = title;
+        currMenu = "main";
 
-        for (int i = 0 ; i < titleSpacing ; i++ ) {
-            menuContent += lineTemplate;
-        }
-
-        menuContent += stringInsert(lineTemplate, buttonHeader, MAX_WIDTH/16);
-
-        if (menuOptions != null) {
-            for (String button : menuOptions)
-            {
-                counter++;
-                menuContent += stringInsert(lineTemplate, counter + ") " + button, MAX_WIDTH/16);
-            }
-        }
-
-        menuContent += stringInsert(lineTemplate,windowBorder,1);
-        menuContent += "| Button Select(1-" + (counter) +"): ";
-        clearConsole();
-        System.out.print(menuContent);
-
-    }
-
-    private void optionSelect()
-    {
-
+        menuOptions.add("Create Tournament");
+        menuOptions.add("Exit");
     }
 
 
@@ -200,7 +246,12 @@ public class Menu {
     private void update()
     {
         print();
-        optionSelect();
+        optionSelect(currMenu);
     }
 
+    protected void promptEnterKey(){
+        System.out.println("Press \"ENTER\" to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+    }
 }
