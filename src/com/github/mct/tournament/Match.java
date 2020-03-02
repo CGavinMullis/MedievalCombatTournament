@@ -58,6 +58,17 @@ public class Match {
     }
 
     /**
+     * Constructor with fighters
+     * @param fighterA blah
+     * @param fighterB blah
+     */
+    public Match(Fighter fighterA, Fighter fighterB)
+    {
+
+    }
+
+
+    /**
      * This function begins the match and signals Jester to Comment throughout.
      */
     public void playMatch()
@@ -81,6 +92,10 @@ public class Match {
         this.jester.commentOnMiddle();
     }
 
+    public Fighter determineWinner()
+    {
+        return null;
+    }
     /**
      * Function Used when creating Fighters in Wild SubTournament
      *
