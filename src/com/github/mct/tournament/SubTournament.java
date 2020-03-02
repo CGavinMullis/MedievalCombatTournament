@@ -14,6 +14,7 @@ public class SubTournament {
     private ArrayList<Match> matches;
     private ArrayList<ArrayList<Match>> subMatches;
     private TournamentArchetype archetype;
+    private int numberOfMatches;
     private int j;
 
     /**
@@ -33,6 +34,9 @@ public class SubTournament {
             }
         }
 
+        //Set Number of Matches
+        this.numberOfMatches = numberOfMatches;
+
         //Number of Rounds
         j = 0;
 
@@ -42,6 +46,17 @@ public class SubTournament {
         //Create ArrayList of Matches
         this.matches = new ArrayList<>();
 
+        //Create ArrayList of ArrayList of Matches.
+        this.subMatches = new ArrayList<>();
+    }
+
+    /**
+     * This function determines the winner of a SubTournament and returns a Fighter
+     *
+     * @return Fighter that won the SubTournament
+     */
+    public Fighter determineWinner()
+    {
         //If Not the Final Match
         if(numberOfMatches != 1)
         {
@@ -59,10 +74,7 @@ public class SubTournament {
             }
 
             //Add Current Matches to subMatches list
-            this.subMatches = new ArrayList<>();
             this.subMatches.add(matches);
-
-            //Use Winners from previous matches for SubSubTournaments
 
             //Until we are left with 1 match
             while (numberOfMatches != 1)
@@ -112,9 +124,6 @@ public class SubTournament {
         //There is only 1 Match
         else
         {
-            //Add Current Matches to subMatches list
-            this.subMatches = new ArrayList<>();
-
             //Final Match
             this.matches = new ArrayList<>();
 
@@ -128,17 +137,9 @@ public class SubTournament {
             this.matches.add(temp);
         }
 
-        //Add Match to SubMatches
+        //Add Last Match to SubMatches
         this.subMatches.add(matches);
-    }
 
-    /**
-     * This function determines the winner of a SubTournament and returns a Fighter
-     *
-     * @return Fighter that won the SubTournament
-     */
-    public Fighter determineWinner()
-    {
         //Return Winner from Final Match
         return this.subMatches.get(j).get(0).determineWinner();
     }
