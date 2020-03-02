@@ -24,13 +24,10 @@ public class SubTournament {
     public SubTournament(TournamentArchetype type, int numberOfMatches)
     {
         //Check Range of numberOfMatches
-        if(!isPowerOfTwo(numberOfMatches))
+        if(isNotPowerOfTwo(numberOfMatches))
         {
-            //Zombie Code
-            // throw new IllegalArgumentException("Number of Matches is not a power of two.");
-
             //Decrement numberOfMatches until it is a power of two
-            while(!isPowerOfTwo(numberOfMatches))
+            while(isNotPowerOfTwo(numberOfMatches))
             {
                 numberOfMatches--;
             }
@@ -137,6 +134,8 @@ public class SubTournament {
 
     /**
      * This function determines the winner of a SubTournament and returns a Fighter
+     *
+     * @return Fighter that won the SubTournament
      */
     public Fighter determineWinner()
     {
@@ -145,26 +144,43 @@ public class SubTournament {
     }
 
     /**
-     * Returns True if the passed integer is a power of two, Else False
+     * Returns the TournamentArchetype for the SubTournament
+     *
+     * @return TournamentArchetype of the tournament
+     */
+    public TournamentArchetype getArchetype()
+    {
+        return this.archetype;
+    }
+
+    /**
+     * Returns the entire arraylist of subMatches, each index is a list of matches
+     *
+     * @return Arraylist of Arraylist of Matches. Contains Each Round of matches.
+     */
+    public ArrayList<ArrayList<Match>> getMatches()
+    {
+        return this.subMatches;
+    }
+
+    /**
+     * Returns True if the passed integer is NOT a power of two, Else False
      *
      * @param n Value to be Checked
      * @return Boolean value
      */
-    private boolean isPowerOfTwo(int n)
+    private boolean isNotPowerOfTwo(int n)
     {
         //0 Matches are not Valid
         if(n == 0)
         {
-            return false;
+            return true;
         }
 
         //Intermediate Value for calculation
         double intermediateVal = (Math.log(n) / Math.log(2));
 
         //If ceiling and floor are the same value is a power of two
-        return (int)(Math.ceil(intermediateVal)) == (int)(Math.floor(intermediateVal));
+        return (int) (Math.ceil(intermediateVal)) != (int) (Math.floor(intermediateVal));
     }
-
-
-
 }
