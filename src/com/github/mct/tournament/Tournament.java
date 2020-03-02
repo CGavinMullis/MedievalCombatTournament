@@ -16,17 +16,17 @@ public class Tournament {
      *
      * Creates 4 subTournaments
      */
-    public Tournament()
+    public Tournament(int[] numOfMatches)
     {
-        //Creates SubTournaments
+        //Create ArrayList to hold SubTournaments
+        this.subTournaments = new ArrayList<>();
+
+        //Creates First 4 SubTournaments
         for(int i = 0; i < 4; i++)
         {
-            SubTournament temp = new SubTournament(i);
-            if(temp != null)
-            {
-                this.subTournaments.add(temp);
-            }
-
+            TournamentArchetype[] type = TournamentArchetype.values();
+            SubTournament temp = new SubTournament(type[i], numOfMatches[i]);
+            this.subTournaments.add(temp);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.github.mct.tournament;
 
+import com.github.mct.combat.Fighter;
+
 import java.util.ArrayList;
 
 /**
@@ -10,41 +12,125 @@ import java.util.ArrayList;
  */
 public class SubTournament {
     private ArrayList<Match> matches;
+    private ArrayList<ArrayList<Match>> subMatches;
     private TournamentArchetype archetype;
+    private int j;
 
     /**
      * SubTournament Constructor
-     * A SubTournament is a best of 3 style tournament using 1 tournament archetype.
+     * Creates a SubTournament of numberOfMatches Matches and (2*numberOfMatches) Fighters.
+     * The TournamentArchetype passed declares the weapons used in the SubTournament.
      */
-    public SubTournament(int subTournamentNumber)
+    public SubTournament(TournamentArchetype type, int numberOfMatches)
     {
-        if(subTournamentNumber > 3 || subTournamentNumber < 0)
-        {
-            throw new AssertionError("subTournamentNumber must be between in the range [0,3]!");
-        }
+        //Number of Rounds
+        j = 0;
 
-        //Get Archetype
-        this.archetype = TournamentArchetype.values()[subTournamentNumber];
+        //Set Archetype
+        this.archetype = type;
 
-        //Create 3 Matches with Archetype
-        for(int i = 0; i < 3; i++)
+        //Create ArrayList of Matches
+        this.matches = new ArrayList<>();
+
+        //If Not the Final Match
+        if(numberOfMatches != 1)
         {
-            Match temp = new Match(this.archetype);
-            if(temp != null)
+            //Create numberOfMatches Matches with TournamentArchetype
+            for (int i = 0; i < numberOfMatches; i++)
             {
+                //Create New Match with TournamentArchetype
+                Match temp = new Match(this.archetype);
+
+                //Play Match
+                temp.playMatch();
+
+                //Add Match to list
                 this.matches.add(temp);
             }
 
+            //Add Current Matches to subMatches list
+            this.subMatches = new ArrayList<>();
+            this.subMatches.add(matches);
+
+            //Use Winners from previous matches for SubSubTournaments
+
+            //Until we are left with 1 match
+            while (numberOfMatches != 1)
+            {
+                //Create new List of Matches
+                this.matches = new ArrayList<>();
+
+                //Iterate Across Previous Matches
+                for (int i = 0; i < numberOfMatches; i += 2)
+                {
+                    //Get Winner from Match i & Match i+2
+                    Match temp = new Match(subMatches.get(j).get(i).determineWinner(), subMatches.get(j).get(i + 1).determineWinner());
+
+                    //Play Match
+                    temp.playMatch();
+
+                    //Add Match to List
+                    this.matches.add(temp);
+                }
+
+                //Add Matches to subMatches
+                this.subMatches.add(this.matches);
+
+                //New Number of Matches
+                numberOfMatches = numberOfMatches / 2;
+
+                //New Index of Previous Matches
+                j++;
+            }
+
+            //Final Match
+            this.matches = new ArrayList<>();
+
+            //Get Winner from Match 0 and Match 1
+            Match temp = new Match(subMatches.get(j).get(0).determineWinner(), subMatches.get(j).get(1).determineWinner());
+
+            //Play Match
+            temp.playMatch();
+
+            //Add Match to List
+            this.matches.add(temp);
         }
 
+        //There is only 1 Match
+        else
+        {
+            //Add Current Matches to subMatches list
+            this.subMatches = new ArrayList<>();
+
+            //Final Match
+            this.matches = new ArrayList<>();
+
+            //Create Random Fighters
+            Match temp = new Match(this.archetype);
+
+            //Play Match
+            temp.playMatch();
+
+            //Add Match to List
+            this.matches.add(temp);
+        }
+
+        //Add Match to SubMatches
+        this.subMatches.add(matches);
+
+        //New Index of Previous Matches
+        j++;
     }
 
     /**
-     * This function determines the winner of a SubTournament.
+     * This function determines the winner of a SubTournament and returns a Fighter
      */
-    public void determineWinner()
+    public Fighter determineWinner()
     {
-        //Code
+        //Return Winner from Final Match
+        return this.subMatches.get(j).get(0).determineWinner();
     }
+
+
 
 }
