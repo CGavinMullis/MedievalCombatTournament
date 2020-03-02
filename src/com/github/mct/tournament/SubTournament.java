@@ -1,11 +1,15 @@
 package com.github.mct.tournament;
 
-import com.github.mct.combat.Fighter;
-
+//Import ArrayList
 import java.util.ArrayList;
 
+//Import Fighter Class
+import com.github.mct.combat.Fighter;
+
+
+
 /**
- * SubTournament stores Matches, the Tournament Archetype, and determines the winner of a SubTournament.
+ * SubTournament stores Matches, the Tournament Archetype, and determines the Winner of a SubTournament.
  *
  * @author Gavin Mullis
  *
@@ -17,12 +21,12 @@ public class SubTournament {
     private ArrayList<Match> matches;
 
     /**
-     * Stores all rounds of matches
+     * Stores all rounds of Matches
      */
     private ArrayList<ArrayList<Match>> subMatches;
 
     /**
-     * Stores the Tournament archetype of the SubTournament
+     * Stores the Tournament Archetype of the SubTournament
      */
     private TournamentArchetype archetype;
 
@@ -37,10 +41,14 @@ public class SubTournament {
     private int j;
 
     /**
-     * SubTournament Constructor
      * Creates a SubTournament of numberOfMatches Matches and (2*numberOfMatches) Fighters.
      * The TournamentArchetype passed declares the weapons used in the SubTournament.
      * In a Wild SubTournament Fighters can use all Weapon types.
+     *
+     * @param type TournamentArchetype of the SubTournament to be created.
+     * @param numberOfMatches Integer containing the number of matches to be played.
+     *                        This integer should be a power of two.
+     *                        If the integer is not a power of two it will be decremented until it is a power of two.
      */
     public SubTournament(TournamentArchetype type, int numberOfMatches)
     {
@@ -201,7 +209,7 @@ public class SubTournament {
     /**
      * Returns the entire arraylist of subMatches, each index is a list of matches
      *
-     * @return Arraylist of Arraylist of Matches. Contains Each Round of matches.
+     * @return Arraylist of Arraylist of Matches. Contains each round of matches.
      */
     public ArrayList<ArrayList<Match>> getMatches()
     {
@@ -209,7 +217,7 @@ public class SubTournament {
     }
 
     /**
-     * Returns True if the passed integer is NOT a power of two, Else False
+     * Returns True if the passed integer is NOT a power of two, Else False.
      *
      * @param n Value to be Checked
      * @return Boolean value
