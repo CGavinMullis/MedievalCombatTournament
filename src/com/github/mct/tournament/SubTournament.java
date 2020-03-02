@@ -23,6 +23,12 @@ public class SubTournament {
      */
     public SubTournament(TournamentArchetype type, int numberOfMatches)
     {
+        //Check Range of numberOfMatches
+        if(!isPowerOfTwo(numberOfMatches))
+        {
+            throw new IllegalArgumentException("Number of Matches is not a power of two.");
+        }
+
         //Number of Rounds
         j = 0;
 
@@ -129,6 +135,27 @@ public class SubTournament {
     {
         //Return Winner from Final Match
         return this.subMatches.get(j).get(0).determineWinner();
+    }
+
+    /**
+     * Returns True if the passed integer is a power of two, Else False
+     *
+     * @param n Value to be Checked
+     * @return Boolean value
+     */
+    private boolean isPowerOfTwo(int n)
+    {
+        //0 Matches are not Valid
+        if(n == 0)
+        {
+            return false;
+        }
+
+        //Intermediate Value for calculation
+        double intermediateVal = (Math.log(n) / Math.log(2));
+
+        //If ceiling and floor are the same value is a power of two
+        return (int)(Math.ceil(intermediateVal)) == (int)(Math.floor(intermediateVal));
     }
 
 
