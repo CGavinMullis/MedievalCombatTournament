@@ -26,7 +26,14 @@ public class SubTournament {
         //Check Range of numberOfMatches
         if(!isPowerOfTwo(numberOfMatches))
         {
-            throw new IllegalArgumentException("Number of Matches is not a power of two.");
+            //Zombie Code
+            // throw new IllegalArgumentException("Number of Matches is not a power of two.");
+
+            //Decrement numberOfMatches until it is a power of two
+            while(!isPowerOfTwo(numberOfMatches))
+            {
+                numberOfMatches--;
+            }
         }
 
         //Number of Rounds
