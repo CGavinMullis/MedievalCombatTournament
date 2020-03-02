@@ -9,6 +9,10 @@ import java.util.ArrayList;
  *
  */
 public class Tournament {
+
+    /**
+     * Stores all SubTournaments in the Tournament
+     */
     ArrayList<SubTournament> subTournaments;
 
     /**

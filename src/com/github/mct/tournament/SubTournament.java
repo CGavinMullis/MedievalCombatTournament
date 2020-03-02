@@ -11,16 +11,36 @@ import java.util.ArrayList;
  *
  */
 public class SubTournament {
+    /**
+     * Stores the current Round of Matches
+     */
     private ArrayList<Match> matches;
+
+    /**
+     * Stores all rounds of matches
+     */
     private ArrayList<ArrayList<Match>> subMatches;
+
+    /**
+     * Stores the Tournament archetype of the SubTournament
+     */
     private TournamentArchetype archetype;
+
+    /**
+     * Stores the number of Matches to be played in the SubTournament
+     */
     private int numberOfMatches;
+
+    /**
+     * Stores the current round of the SubTournament
+     */
     private int j;
 
     /**
      * SubTournament Constructor
      * Creates a SubTournament of numberOfMatches Matches and (2*numberOfMatches) Fighters.
      * The TournamentArchetype passed declares the weapons used in the SubTournament.
+     * In a Wild SubTournament Fighters can use all Weapon types.
      */
     public SubTournament(TournamentArchetype type, int numberOfMatches)
     {
@@ -42,6 +62,30 @@ public class SubTournament {
 
         //Set Archetype
         this.archetype = type;
+
+        //Create ArrayList of Matches
+        this.matches = new ArrayList<>();
+
+        //Create ArrayList of ArrayList of Matches.
+        this.subMatches = new ArrayList<>();
+    }
+
+    /**
+     * Constructor for a semi-final or final SubTournament
+     *
+     * @param fighterA The first Fighter of the SubTournament
+     * @param fighterB The second Fighter of the SubTournament
+     */
+    public SubTournament(Fighter fighterA, Fighter fighterB)
+    {
+        //Set Number of Matches to 1
+        this.numberOfMatches = 1;
+
+        //Number of Rounds
+        j = 0;
+
+        //Set Archetype to Wild
+        this.archetype = TournamentArchetype.WILD;
 
         //Create ArrayList of Matches
         this.matches = new ArrayList<>();
