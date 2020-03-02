@@ -94,6 +94,9 @@ public class SubTournament {
 
             //Add Match to List
             this.matches.add(temp);
+
+            //New Index of Previous Matches
+            j++;
         }
 
         //There is only 1 Match
@@ -117,9 +120,6 @@ public class SubTournament {
 
         //Add Match to SubMatches
         this.subMatches.add(matches);
-
-        //New Index of Previous Matches
-        j++;
     }
 
     /**
