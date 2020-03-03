@@ -1,6 +1,9 @@
 package com.github.mct.ui;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.StrictMath.abs;
 
 public class Jester {
 
@@ -15,7 +18,8 @@ public class Jester {
 
     public void commentOnStart() {
 
-        System.out.println(generateComment("I'm so happy to be here!"));
+        System.out.println(generateComment("Death Everywhere! No seriously, like it is everywhere! For real though, have you looked recently? It's crazy, like really crazy. " +
+                "Just saying... Oh! It's cake time! My favorite time of the day!"));
     }
 
     public void commentOnMiddle() {
@@ -32,9 +36,13 @@ public class Jester {
         String baseline = " " + emptySpace + " \n";
         String line;
         String comment = new String();
-        String text = "\"" + content + "\"";
+        List<String> subText;
+        String text = "\"" + content;
         StringBuilder builder;
         int position;
+        int offset = 1;
+        int subIndex;
+        boolean textEnd = false;
 
         jesterHead.add("       _                   ");
         jesterHead.add("      (_)          _       ");
@@ -55,6 +63,20 @@ public class Jester {
         jesterHead.add("       0'-' )/`'-0         ");
         jesterHead.add("           0`              ");
 
+
+        if (text.length() > ((MAX_WIDTH - MAX_WIDTH / 3))) {
+            subText = splitEqually(text,MAX_WIDTH/2 + 10);
+        }
+        else
+        {
+            subText = new ArrayList<>();
+            subText.add(text);
+        }
+        subText.add(subText.size()-1, subText.get(subText.size()-1).concat("\""));
+        offset = subText.size()/2;
+        subIndex = 0;
+
+
         for (int i = 0; i < jesterHead.size(); i++)
         {
             position = 1;
@@ -67,20 +89,38 @@ public class Jester {
                 position++;
             }
 
-            if(i == (jesterHead.size()/2))
+            if(i == ((jesterHead.size()/2)-offset) && !textEnd)
             {
-                position = MAX_WIDTH/2;
-                for (char c : text.toCharArray())
+                offset--;
+                position = MAX_WIDTH/3;
+                for (char c : subText.get(subIndex).toCharArray())
                 {
                     builder.setCharAt(position,c);
                     position++;
                 }
+                subIndex++;
+                if (abs(offset) == subText.size()/2 || subText.size() == 1)
+                {
+                    textEnd = true;
+                }
             }
+            //System.out.println(builder.toString());
             comment += builder.toString();
         }
 
 
         return comment;
+    }
+
+    private static List<String> splitEqually(String text, int size) {
+        // Give the list the right capacity to start with. You could use an array
+        // instead if you wanted.
+        List<String> ret = new ArrayList<String>((text.length() + size - 1) / size);
+
+        for (int start = 0; start < text.length(); start += size) {
+            ret.add(text.substring(start, Math.min(text.length(), start + size)));
+        }
+        return ret;
     }
 
 }
