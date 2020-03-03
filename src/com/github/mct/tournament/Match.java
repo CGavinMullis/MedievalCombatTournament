@@ -29,11 +29,33 @@ public class Match {
     private Fighter winner;         // winner of the match
     Random rand;                    // random number generator for dice rolling
 
-    /**
-     * Constructor for a match that creates two Fighters with a type of Weapon based on the Tournament Archetype
-     * and a Jester.
-     * @param type the type of the tournament so that fighters will be evenly matched
-     */
+    public static void main(String args[])
+    {
+        Match match = new Match(TournamentArchetype.LONG);
+        match.playMatch();
+//        int str = match.fighterB.GetStrength();
+//        int rea = match.fighterB.GetReach();
+//        int spe = match.fighterB.GetSpeed();
+//        System.out.println(String.format("Strength: %d",str));
+//        System.out.println(String.format("Reach: %d",rea));
+//        System.out.println(String.format("Speed: %d",spe));
+//        Match match1 = new Match(match.fighterA, match.fighterB);
+//
+//        int str = match1.fighterB.GetStrength();
+//        int rea = match1.fighterB.GetReach();
+//        int spe = match1.fighterB.GetSpeed();
+//        System.out.println(String.format("Strength: %d",str));
+//        System.out.println(String.format("Reach: %d",rea));
+//        System.out.println(String.format("Speed: %d",spe));
+
+
+    }
+
+        /**
+         * Constructor for a match that creates two Fighters with a type of Weapon based on the Tournament Archetype
+         * and a Jester.
+         * @param type the type of the tournament so that fighters will be evenly matched
+         */
     public Match(TournamentArchetype type)
     {
         //Create Fighters with Weapons based on Tournament Archetype
@@ -84,10 +106,14 @@ public class Match {
     public void playMatch()
     {
         this.jester.commentOnStart();       // Jester comments before match begins
+        System.out.println("Jester says it's started");
+        System.out.println(String.format("%s vs %s",fighterA.GetName(),fighterB.GetName()));
 
         winner = new Fighter(Combat());     // winner is determined through combat
-
         this.jester.commentOnEnd();         // Jester comments after match ends
+        System.out.println("And the winner is...");
+        System.out.println(winner.GetName());
+
     }
 
     /**
@@ -121,9 +147,12 @@ public class Match {
      */
     private void SetAttributes(@NotNull Fighter fighter)
     {
-        int strength = rand.nextInt(5) + 1;         // determined by a roll of a six-sided die
-        int reach = rand.nextInt(5) + 1;
-        int speed = rand.nextInt(5) + 1;
+        rand = new Random();                        // seed random number generator
+        int strength = rand.nextInt(35) + 1;         // determined by a roll of a six-sided die
+        rand = new Random();                        // seed random number generator
+        int reach = rand.nextInt(35) + 1;
+        rand = new Random();                        // seed random number generator
+        int speed = rand.nextInt(35) + 1;
         fighter.StoreAttributes(strength, reach, speed);   // store generated attributes on this fighter
     }
 
@@ -134,17 +163,31 @@ public class Match {
     private Fighter Combat()
     {
         Fight();            // opponents attack each other
-
-
-        while( !(fighterA.IsDefeated() || fighterB.IsDefeated()) )  // while both fighters are undefeated
+        int fightCount = 1;
+        while( !fighterA.IsDefeated() && !fighterB.IsDefeated() )  // while both fighters are undefeated
         {
             // if either opponent is half health, signal to Jester that it's the middle of the match
-            if(fighterA.IsBloodied() || fighterB.IsBloodied()) { this.signalMiddleToJester(); }
+            if(fighterA.IsBloodied() || fighterB.IsBloodied()) {
+                System.out.println("Halfway there");
+
+                this.signalMiddleToJester(); }
+
+            System.out.println(String.format("Fighter A's damage: %d",fighterA.GetDamage()));
+            System.out.println(String.format("Fighter B's damage: %d",fighterB.GetDamage()));
+            fightCount += 1;
+            if(fightCount >= 5){
+                // jester interferes
+            }
             Fight();        // fighters keep fighting
         }
 
+        System.out.println("Final scores:");
+        System.out.println(String.format("Fighter A's damage: %d",fighterA.GetDamage()));
+        System.out.println(String.format("Fighter B's damage: %d",fighterB.GetDamage()));
+
         if(fighterA.IsDefeated() && fighterB.IsDefeated())      // if the match is a tie
         {
+            System.out.println("It's a tie!");
             return Combat();        // redo the match
         }
         else if(fighterA.IsDefeated() && !fighterB.IsDefeated())    // if fighterB is undefeated
@@ -161,12 +204,17 @@ public class Match {
      */
     private void SetAttackRatings()
     {
+        System.out.println(String.format("Fighter A's strength: %d",fighterA.GetStrength()));
+        System.out.println(String.format("Fighter B's strength: %d",fighterB.GetStrength()));
+
         if(fighterB.isStrongerThan(fighterA))
         {
+            System.out.println("Fighter B is stronger than Fighter A");
             fighterB.IncrementAttackRating();
         }
         else if (fighterA.isStrongerThan(fighterB))
         {
+            System.out.println("Fighter A is stronger than Fighter B");
             fighterA.IncrementAttackRating();
         }
     }
@@ -176,12 +224,17 @@ public class Match {
      */
     private void SetDefenseRatings()
     {
+        System.out.println(String.format("Fighter A's Reach: %d",fighterA.GetReach()));
+        System.out.println(String.format("Fighter B's Reach: %d",fighterB.GetReach()));
+
         if(fighterB.canReachFartherThan((fighterA)))
         {
+            System.out.println("Fighter B reaches farther than Fighter A");
             fighterB.IncrementDefenseRating();
         }
         else if (fighterA.canReachFartherThan(fighterB))
         {
+            System.out.println("Fighter A reaches farther than Fighter B");
             fighterA.IncrementDefenseRating();
         }
     }
@@ -193,13 +246,18 @@ public class Match {
     {
         if(fighterA.GetWeaponArchetype() != fighterB.GetWeaponArchetype())
         {
+            System.out.println(String.format("Fighter A's speed: %d",fighterA.GetSpeed()));
+            System.out.println(String.format("Fighter B's speed: %d",fighterB.GetSpeed()));
+
             if(fighterA.isFasterThan(fighterB))
             {
+                System.out.println("Fighter A is faster than Fighter B");
                 fighterA.IncrementAttackRating();
                 fighterA.IncrementDefenseRating();
             }
             else if(fighterB.isFasterThan(fighterA))
             {
+                System.out.println("Fighter B is faster than Fighter A");
                 fighterB.IncrementAttackRating();
                 fighterB.IncrementDefenseRating();
             }
@@ -211,12 +269,35 @@ public class Match {
      */
     private void Fight()
     {
+        System.out.println("\nFight begins!");
+
         SetAttackRatings();     // check strength and set attack rating
         SetDefenseRatings();    // check reach and set defense rating
         SetBoth();              // check speed and set both ratings
 
+        System.out.println(String.format("Fighter A's attack rating: %d",fighterA.GetAttackRating()));
+        System.out.println(String.format("Fighter A's defense rating: %d",fighterA.GetDefenseRating()));
+        System.out.println(String.format("Fighter B's attack rating: %d",fighterB.GetAttackRating()));
+        System.out.println(String.format("Fighter B's defense rating: %d",fighterB.GetDefenseRating()));
+
+
+        int bap = fighterB.GetAttackPerformance();
+        int adp = fighterA.GetDefensePerformance();
+        int aap = fighterA.GetAttackPerformance();
+        int bdp = fighterB.GetDefensePerformance();
+
+
+        System.out.println(String.format("Fighter B's Attack Performance: %d",bap));
+        System.out.println(String.format("Fighter A's Defense Performance: %d",adp));
+        System.out.println(" ");
+        System.out.println(String.format("Fighter A's Attack Performance: %d",aap));
+        System.out.println(String.format("Fighter B's Defense Performance: %d",bdp));
+
         // each fighter takes damage equal to their opponent's attack minus their defense
-        fighterA.TakeDamage(fighterB.GetAttackPerformance() - fighterA.GetDefensePerformance());
-        fighterB.TakeDamage(fighterA.GetAttackPerformance() - fighterB.GetDefensePerformance());
+//        fighterA.TakeDamage(fighterB.GetAttackPerformance() - fighterA.GetDefensePerformance());
+//        fighterB.TakeDamage(fighterA.GetAttackPerformance() - fighterB.GetDefensePerformance());
+        fighterA.TakeDamage(bap - adp);
+        fighterB.TakeDamage(aap - bdp);
+
     }
 }
