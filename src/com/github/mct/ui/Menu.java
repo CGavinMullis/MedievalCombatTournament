@@ -26,6 +26,8 @@ public class Menu {
 
     private int [] numMatches;
 
+    private boolean exit_Flag;
+
     protected int MAX_WIDTH;
 
     protected String emptySpace;
@@ -52,8 +54,13 @@ public class Menu {
         windowDivider = new String(new char[MAX_WIDTH - 3]).replace("\0", "_");
         menuOptions = new ArrayList<>();
         numMatches = new int[4];
+        currTourn = new Tournament();
         defaultMenu();
-        update();
+        exit_Flag = false;
+
+        while(!exit_Flag) {
+            update();
+        }
     }
 
     public static Menu getInstance()
@@ -83,8 +90,7 @@ public class Menu {
                 counter++;
                 content += stringInsert(lineTemplate, counter + ") " + button, MAX_WIDTH / 16);
             }
-
-
+            
             content += stringInsert(lineTemplate, windowBorder, 1);
             content += "| Button Select(1-" + (counter) + "): ";
         }
@@ -96,39 +102,46 @@ public class Menu {
     {
         Scanner in = new Scanner(System.in);
         String selection;
+        selection = in.nextLine();
+
+        if(!isNumeric(selection))
+        {
+            System.out.print("Input must be an integer...\n");
+            promptEnterKey();
+            update();
+            return;
+        }
 
         switch (menu) {
             case "main":
-                selection = in.nextLine();
-                if(!isNumeric(selection))
-                {
-                    System.out.print("Input must be an integer...\n");
-                    promptEnterKey();
-                    update();
-                    return;
-                }
                 switch (selection) {
                 case "1":
                     matchMenu();
-                    update();
+                    tournamentMenu();
                     break;
                 case "2":
+                    exit_Flag = true;
                     return;
                 default:
                     System.out.println("| Button selection must be an integer value from 1 through " + menuOptions.size());
                     promptEnterKey();
-
                 }
                 break;
-            case "match":
-                currJester = new Jester();
-                currJester.commentOnStart();
-                promptEnterKey();
-
-
+            case "tournament":
+                switch (selection) {
+                    case "1":
+                        break;
+                    case "2":
+                        defaultMenu();
+                        return;
+                    default:
+                        System.out.println("| Button selection must be an integer value from 1 through " + menuOptions.size());
+                        currJester = new Jester();
+                        currJester.commentOnStart();
+                        promptEnterKey();
+                }
+                break;
         }
-
-        update();
     }
 
     private void defaultMenu()
@@ -186,6 +199,7 @@ public class Menu {
         windowContent = title;
         currMenu = "main";
 
+        menuOptions.clear();
         menuOptions.add("Create Tournament");
         menuOptions.add("Exit");
     }
@@ -333,12 +347,22 @@ public class Menu {
         }
 
         numMatches[3] = Integer.parseInt(selection);
+    }
 
+    private void  tournamentMenu()
+    {
+        currTourn.initializeTournament(numMatches);
+        genTournMap();
+        menuOptions.add("Run Tournament");
+        menuOptions.add("Start Over");
+        currMenu = "tournament";
+    }
 
-
-
-
-        currMenu = "match";
+    private void genTournMap()
+    {
+        String map;
+        map = stringInsert(lineTemplate, "<<placeholder>>", (MAX_WIDTH/2) - (15/2)-1);
+        windowContent = map;
     }
 
     protected static void clearConsole(){
