@@ -1,318 +1,364 @@
 package com.github.mct.tournament;
 
-//Import Random Generator
-import java.util.Random;
-
-//Import WeaponArchetype Class
-import com.github.mct.combat.weapons.WeaponArchetype;
-
-//Import Fighter Class
 import com.github.mct.combat.Fighter;
-
-//Import Jester Class
 import com.github.mct.ui.Jester;
 
-// for preventing null input parameters
-import org.jetbrains.annotations.NotNull;
+import java.awt.image.AreaAveragingScaleFilter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Match stores Fighters, determines the winner of a fight, and uses Jester to comment on the status of the match.
  *
- * @author Brianna Bell
+ * @author Brianna Bell & SirNocturne
  *
  */
 public class Match {
 
-    private Fighter fighterA;       // both fighters for the match
-    private Fighter fighterB;       // both fighters for the match
+    private Fighter fighter1;       // both fighters for the match
+    private Fighter fighter2;       // both fighters for the match
     private Jester jester;          // jester for commentary
-    private Fighter winner;         // winner of the match
-    Random rand;                    // random number generator for dice rolling
 
-    public static void main(String args[])
-    {
-        Match match = new Match(TournamentArchetype.LONG);
-        match.playMatch();
-//        int str = match.fighterB.GetStrength();
-//        int rea = match.fighterB.GetReach();
-//        int spe = match.fighterB.GetSpeed();
-//        System.out.println(String.format("Strength: %d",str));
-//        System.out.println(String.format("Reach: %d",rea));
-//        System.out.println(String.format("Speed: %d",spe));
-//        Match match1 = new Match(match.fighterA, match.fighterB);
-//
-//        int str = match1.fighterB.GetStrength();
-//        int rea = match1.fighterB.GetReach();
-//        int spe = match1.fighterB.GetSpeed();
-//        System.out.println(String.format("Strength: %d",str));
-//        System.out.println(String.format("Reach: %d",rea));
-//        System.out.println(String.format("Speed: %d",spe));
+    protected int MAX_WIDTH;
 
+    protected String emptySpace;
 
-    }
+    protected String lineTemplate;
 
-        /**
-         * Constructor for a match that creates two Fighters with a type of Weapon based on the Tournament Archetype
-         * and a Jester.
-         * @param type the type of the tournament so that fighters will be evenly matched
-         */
-    public Match(TournamentArchetype type)
-    {
-        //Create Fighters with Weapons based on Tournament Archetype
-        switch(type)
-        {
-            case SHORT:         // initialize both fighters with short weapons
-                this.fighterA = new Fighter(WeaponArchetype.SHORT);
-                this.fighterB = new Fighter(WeaponArchetype.SHORT);
-                break;
-            case MEDIUM:        // initialize both fighters with medium weapons
-                this.fighterA = new Fighter(WeaponArchetype.MEDIUM);
-                this.fighterB = new Fighter(WeaponArchetype.MEDIUM);
-                break;
-            case LONG:          // initialize both fighters with long weapons
-                this.fighterA = new Fighter(WeaponArchetype.LONG);
-                this.fighterB = new Fighter(WeaponArchetype.LONG);
-                break;
-            case WILD:          // randomly Select Two Weapon Types
-                this.fighterA = new Fighter(getRandomEnum());
-                this.fighterB = new Fighter(getRandomEnum());
-                break;
-        }
+    protected String windowBorder;
 
-        SetAttributes(this.fighterA);       // set attributes on each fighter
-        SetAttributes(this.fighterB);
+    protected String windowDivider;
 
-        this.jester = new Jester();         // create Jester to comment on the match
-        rand = new Random();                // seed random number generator
-    }
+    protected String windowContent;
+
 
     /**
      * Overloaded constructor for semifinals and finals, using winners from previous matches
-     * @param firstFighter the winner from a previous match
-     * @param secondFighter the winner from a previous match
      */
-    public Match(@NotNull Fighter firstFighter, @NotNull Fighter secondFighter)
+    public Match()
     {
-        this.fighterA = new Fighter(firstFighter);          // deep copy to local fighter
-        this.fighterB = new Fighter(secondFighter);         // deep copy to local fighter
-
-        this.jester = new Jester();         // create Jester to comment on the match
-        rand = new Random();                // seed random number generator
-    }
-
-    /**
-     * Constructor with fighters
-     * @param fighterA blah
-     * @param fighterB blah
-     */
-    public Match(Fighter fighterA, Fighter fighterB)
-    {
-
+        this.fighter1 = null;
+        this.fighter2 = null;
+        this.jester = new Jester(this);         // create Jester to comment on the match
+        MAX_WIDTH = 100;
+        emptySpace = new String(new char[MAX_WIDTH - 3]).replace("\0", " ");
+        lineTemplate = '|' + emptySpace + "|\n";
+        windowBorder = new String(new char[MAX_WIDTH - 3]).replace("\0", "-");
+        windowDivider = new String(new char[MAX_WIDTH - 3]).replace("\0", "_");
     }
 
 
     /**
      * This function begins the match and signals Jester to Comment throughout.
      */
-    public void playMatch()
+    public Fighter PlayMatch()
     {
-        this.jester.commentOnStart();       // Jester comments before match begins
-        System.out.println("Jester says it's started");
-        System.out.println(String.format("%s vs %s",fighterA.GetName(),fighterB.GetName()));
+        int f1AttackAdvantage = 0;
+        int f1DefenseAdvantage = 0;
+        int f2AttackAdvantage = 0;
+        int f2DefenseAdvantage = 0;
+        int f1HP = 10;
+        int f2HP = 10;
+        boolean f1Bloodied = false;
+        boolean f2Bloodied = false;
 
-        winner = new Fighter(Combat());     // winner is determined through combat
-        this.jester.commentOnEnd();         // Jester comments after match ends
-        System.out.println("And the winner is...");
-        System.out.println(winner.GetName());
+        this.jester.CommentOnStart();       // Jester comments before match begins
 
+        if (fighter1.StrongerThan(fighter2))
+        {
+            f1AttackAdvantage++;
+        }
+        else if (fighter2.StrongerThan(fighter1))
+        {
+            f2AttackAdvantage++;
+        }
+        if (fighter1.LongerReachedThan(fighter2))
+        {
+            f1DefenseAdvantage++;
+        }
+        else if(fighter2.LongerReachedThan(fighter1))
+        {
+            f2DefenseAdvantage++;
+        }
+        if (fighter1.FasterThan(fighter2) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
+        {
+            f1AttackAdvantage++;
+            f1DefenseAdvantage++;
+        }
+        else if(fighter2.FasterThan(fighter1) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
+        {
+            f2AttackAdvantage++;
+            f2DefenseAdvantage++;
+        }
+
+        while(true)
+        {
+            f2HP -= (rollD6(fighter1.GetAttackPerformance()+f1AttackAdvantage) - rollD6(fighter2.GetDefensePerformance()+f2DefenseAdvantage));
+            f1HP -= (rollD6(fighter2.GetAttackPerformance()+f2AttackAdvantage) - rollD6(fighter1.GetDefensePerformance()+f1DefenseAdvantage));
+
+            if (f1HP <= 5)
+            {
+                if (f1HP <= 0)
+                {
+                    if(f2HP <= 0)
+                    {
+                        this.jester.CommentOnEnd(fighter1, fighter2);
+                        f1HP = 10;
+                        f2HP = 10;
+                        f1Bloodied = false;
+                        f2Bloodied = false;
+                        continue;
+                    }
+                    this.jester.CommentOnEnd(fighter1);
+                    return fighter2;
+                }
+                if(!f1Bloodied) {
+                    SignalMiddleToJester(fighter1);
+                    f1Bloodied = true;
+                }
+            }
+            if (f2HP <= 5)
+            {
+                if (f2HP <= 0)
+                {
+                    this.jester.CommentOnEnd(fighter2);
+                    return fighter1;
+                }
+                if(!f2Bloodied) {
+                    SignalMiddleToJester(fighter2);
+                    f2Bloodied = true;
+                }
+            }
+        }
     }
 
     /**
      * This function signals Jester that the match is halfway through
      */
-    public void signalMiddleToJester()
+    public void SignalMiddleToJester(Fighter f)
     {
-        this.jester.commentOnMiddle();
+        this.jester.CommentOnMiddle(f);
     }
 
-    public Fighter determineWinner()
+    private void print()
     {
-        return null;
-    }
-    /**
-     * Function Used when creating Fighters in Wild SubTournament
-     *
-     * @return Returns a random WeaponArchetype
-     */
-    private WeaponArchetype getRandomEnum()
-    {
-        //Get Enum Values
-        WeaponArchetype[] values = WeaponArchetype.values();
-        //Create Random Object
-        Random rand = new Random();
-        //Get Value in range of enumeration
-        int randInt = rand.nextInt(values.length);
-        //Select Archetype Value with randInt
-        return values[randInt];
+        String content;
+        String buttonHeader = new String(new char[MAX_WIDTH - 3]).replace("\0", "/");
+        int counter = 0;
+
+        content = stringInsert(lineTemplate, windowBorder, 1);
+        content += windowContent;
+        content += stringInsert(lineTemplate, windowDivider, 1);
+
+        clearConsole();
+        System.out.print(content);
     }
 
-    /**
-     * Sets new attributes on fighter as dice rolls of a six-sided die
-     * @param fighter the newly initialized fighter with no attributes yet
-     */
-    private void SetAttributes(@NotNull Fighter fighter)
+    protected String stringInsert(String target, String insert, int position)
     {
-        rand = new Random();                        // seed random number generator
-        int strength = rand.nextInt(35) + 1;         // determined by a roll of a six-sided die
-        rand = new Random();                        // seed random number generator
-        int reach = rand.nextInt(35) + 1;
-        rand = new Random();                        // seed random number generator
-        int speed = rand.nextInt(35) + 1;
-        fighter.StoreAttributes(strength, reach, speed);   // store generated attributes on this fighter
+        int length = target.length();
+        int i = position;
+
+        StringBuilder builder = new StringBuilder(target);
+
+        for (char c : insert.toCharArray())
+        {
+            builder.setCharAt(position, c);
+            position++;
+        }
+
+        return builder.toString();
     }
 
-    /**
-     * Runs rounds of combat until a winner is determined
-     * @return the winning fighter
-     */
-    private Fighter Combat()
-    {
-        Fight();            // opponents attack each other
-        int fightCount = 1;
-        while( !fighterA.IsDefeated() && !fighterB.IsDefeated() )  // while both fighters are undefeated
-        {
-            // if either opponent is half health, signal to Jester that it's the middle of the match
-            if(fighterA.IsBloodied() || fighterB.IsBloodied()) {
-                System.out.println("Halfway there");
 
-                this.signalMiddleToJester(); }
-
-            System.out.println(String.format("Fighter A's damage: %d",fighterA.GetDamage()));
-            System.out.println(String.format("Fighter B's damage: %d",fighterB.GetDamage()));
-            fightCount += 1;
-            if(fightCount >= 5){
-                // jester interferes
-            }
-            Fight();        // fighters keep fighting
-        }
-
-        System.out.println("Final scores:");
-        System.out.println(String.format("Fighter A's damage: %d",fighterA.GetDamage()));
-        System.out.println(String.format("Fighter B's damage: %d",fighterB.GetDamage()));
-
-        if(fighterA.IsDefeated() && fighterB.IsDefeated())      // if the match is a tie
-        {
-            System.out.println("It's a tie!");
-            return Combat();        // redo the match
-        }
-        else if(fighterA.IsDefeated() && !fighterB.IsDefeated())    // if fighterB is undefeated
-        {
-            return fighterB;                                    // return the winner as fighterB
-        }
-        else {
-            return fighterA;                                    // return the winner as fighterA
-        }
+    public Fighter getFighter1() {
+        return fighter1;
     }
 
-    /**
-     * Compares the strengths of the two fighters and increment attack ratings
-     */
-    private void SetAttackRatings()
-    {
-        System.out.println(String.format("Fighter A's strength: %d",fighterA.GetStrength()));
-        System.out.println(String.format("Fighter B's strength: %d",fighterB.GetStrength()));
-
-        if(fighterB.isStrongerThan(fighterA))
-        {
-            System.out.println("Fighter B is stronger than Fighter A");
-            fighterB.IncrementAttackRating();
-        }
-        else if (fighterA.isStrongerThan(fighterB))
-        {
-            System.out.println("Fighter A is stronger than Fighter B");
-            fighterA.IncrementAttackRating();
-        }
+    public Fighter getFighter2() {
+        return fighter2;
     }
 
-    /**
-     * Compares the reaches of the two fighters and increment defense ratings
-     */
-    private void SetDefenseRatings()
+    public void setFighter1(Fighter f)
     {
-        System.out.println(String.format("Fighter A's Reach: %d",fighterA.GetReach()));
-        System.out.println(String.format("Fighter B's Reach: %d",fighterB.GetReach()));
-
-        if(fighterB.canReachFartherThan((fighterA)))
-        {
-            System.out.println("Fighter B reaches farther than Fighter A");
-            fighterB.IncrementDefenseRating();
-        }
-        else if (fighterA.canReachFartherThan(fighterB))
-        {
-            System.out.println("Fighter A reaches farther than Fighter B");
-            fighterA.IncrementDefenseRating();
-        }
+        fighter1 = f;
     }
 
-    /**
-     * Compares the speed of the two fighters and increment both ratings
-     */
-    private void SetBoth()
+    public void setFighter2(Fighter f)
     {
-        if(fighterA.GetWeaponArchetype() != fighterB.GetWeaponArchetype())
-        {
-            System.out.println(String.format("Fighter A's speed: %d",fighterA.GetSpeed()));
-            System.out.println(String.format("Fighter B's speed: %d",fighterB.GetSpeed()));
+        fighter2 = f;
+    }
 
-            if(fighterA.isFasterThan(fighterB))
+    private int rollD6(int rolls)
+    {
+        Random r = new Random();
+        int sum = 0;
+        for (int i = 0 ; i < rolls ; i++)
+        {
+            sum += r.nextInt(5)+1;
+        }
+        return sum;
+    }
+
+    private static void clearConsole(){
+        try
+        {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows"))
             {
-                System.out.println("Fighter A is faster than Fighter B");
-                fighterA.IncrementAttackRating();
-                fighterA.IncrementDefenseRating();
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             }
-            else if(fighterB.isFasterThan(fighterA))
+            else
             {
-                System.out.println("Fighter B is faster than Fighter A");
-                fighterB.IncrementAttackRating();
-                fighterB.IncrementDefenseRating();
+                Runtime.getRuntime().exec("clear");
             }
+        }
+        catch (final Exception e)
+        {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    /**
-     * Checks ratings of both opponents and each fighter takes damage
-     */
-    private void Fight()
+    private void generateRoundTitle(int roundNum)
     {
-        System.out.println("\nFight begins!");
+        ArrayList<String> sRound = new ArrayList<>();
+        ArrayList<String> sDigit = this.generateRoundNumber(roundNum);
+        String roundTitle = new String();
+        sRound.add(" _______  _______           _        ______  ");
+        sRound.add("(  ____ )(  ___  )|\\     /|( (    /|(  __  \\ ");
+        sRound.add("| (    )|| (   ) || )   ( ||  \\  ( || (  \\  )");
+        sRound.add("| (____)|| |   | || |   | ||   \\ | || |   ) |");
+        sRound.add("|     __)| |   | || |   | || (\\ \\) || |   | |");
+        sRound.add("| (\\ (   | |   | || |   | || | \\   || |   ) |");
+        sRound.add("| ) \\ \\__| (___) || (___) || )  \\  || (__/  )");
+        sRound.add("|/   \\__/(_______)(_______)|/    )_)(______/ ");
 
-        SetAttackRatings();     // check strength and set attack rating
-        SetDefenseRatings();    // check reach and set defense rating
-        SetBoth();              // check speed and set both ratings
+        for (int i = 0; i < sRound.size() ; i++)
+        {
+            String s = sRound.get(i) + " " + sDigit.get(i);
+            roundTitle += stringInsert(lineTemplate, s, (MAX_WIDTH/2) - (s.length()/2)-1);
+        }
 
-        System.out.println(String.format("Fighter A's attack rating: %d",fighterA.GetAttackRating()));
-        System.out.println(String.format("Fighter A's defense rating: %d",fighterA.GetDefenseRating()));
-        System.out.println(String.format("Fighter B's attack rating: %d",fighterB.GetAttackRating()));
-        System.out.println(String.format("Fighter B's defense rating: %d",fighterB.GetDefenseRating()));
+    }
 
+    private ArrayList<String> generateRoundNumber(int requestedNum)
+    {
+        Map<Integer, ArrayList<String>> oneDigitNums = new HashMap<>();
 
-        int bap = fighterB.GetAttackPerformance();
-        int adp = fighterA.GetDefensePerformance();
-        int aap = fighterA.GetAttackPerformance();
-        int bdp = fighterB.GetDefensePerformance();
+        ArrayList<String> sZero = new ArrayList<>();
+        sZero.add(" _______ ");
+        sZero.add("(  __   )");
+        sZero.add("| (  )  |");
+        sZero.add("| | /   |");
+        sZero.add("| (/ /) |");
+        sZero.add("|   / | |");
+        sZero.add("|  (__) |");
+        sZero.add("(_______)");
 
+        ArrayList<String> sOne = new ArrayList<>();
+        sOne.add("  __   ");
+        sOne.add(" /  \\  ");
+        sOne.add(" \\/) ) ");
+        sOne.add("   | | ");
+        sOne.add("   | | ");
+        sOne.add("   | | ");
+        sOne.add(" __) (_");
+        sOne.add(" \\____/");
 
-        System.out.println(String.format("Fighter B's Attack Performance: %d",bap));
-        System.out.println(String.format("Fighter A's Defense Performance: %d",adp));
-        System.out.println(" ");
-        System.out.println(String.format("Fighter A's Attack Performance: %d",aap));
-        System.out.println(String.format("Fighter B's Defense Performance: %d",bdp));
+        ArrayList<String> sTwo = new ArrayList<>();
+        sTwo.add(" _______ ");
+        sTwo.add("/ ___   )");
+        sTwo.add("\\/   )  |");
+        sTwo.add("    /   )");
+        sTwo.add("  _/   / ");
+        sTwo.add(" /   _/  ");
+        sTwo.add("(   (__/\\");
+        sTwo.add("\\_______/");
 
-        // each fighter takes damage equal to their opponent's attack minus their defense
-//        fighterA.TakeDamage(fighterB.GetAttackPerformance() - fighterA.GetDefensePerformance());
-//        fighterB.TakeDamage(fighterA.GetAttackPerformance() - fighterB.GetDefensePerformance());
-        fighterA.TakeDamage(bap - adp);
-        fighterB.TakeDamage(aap - bdp);
+        ArrayList<String> sThree = new ArrayList<>();
+        sThree.add(" ______  ");
+        sThree.add("/ ___  \\ ");
+        sThree.add("\\/   \\  \\");
+        sThree.add("   ___) /");
+        sThree.add("  (___ ( ");
+        sThree.add("      ) \\");
+        sThree.add("/\\___/  /");
+        sThree.add("\\______/ ");
 
+        ArrayList<String> sFour = new ArrayList<>();
+        sFour.add("    ___   ");
+        sFour.add("   /   )  ");
+        sFour.add("  / /) |  ");
+        sFour.add(" / (_) (_ ");
+        sFour.add("(____   _)");
+        sFour.add("     ) (  ");
+        sFour.add("     | |  ");
+        sFour.add("     (_)  ");
+
+        ArrayList<String> sFive = new ArrayList<>();
+        sFive.add(" _______ ");
+        sFive.add("(  ____ \\");
+        sFive.add("| (    \\/");
+        sFive.add("| (____  ");
+        sFive.add("(_____ \\ ");
+        sFive.add("      ) )");
+        sFive.add("/\\____) )");
+        sFive.add("\\______/ ");
+
+        ArrayList<String> sSix = new ArrayList<>();
+        sSix.add("  ______ ");
+        sSix.add(" / ____ \\");
+        sSix.add("( (    \\/");
+        sSix.add("| (____  ");
+        sSix.add("|  ___ \\ ");
+        sSix.add("| (   ) )");
+        sSix.add("( (___) )");
+        sSix.add(" \\_____/ ");
+
+        ArrayList<String> sSeven = new ArrayList<>();
+        sSeven.add(" ______  ");
+        sSeven.add("/ ___  \\ ");
+        sSeven.add("\\/   )  )");
+        sSeven.add("    /  / ");
+        sSeven.add("   /  /  ");
+        sSeven.add("  /  /   ");
+        sSeven.add(" /  /    ");
+        sSeven.add(" \\_/     ");
+
+        ArrayList<String> sEight = new ArrayList<>();
+        sEight.add("  _____  ");
+        sEight.add(" / ___ \\ ");
+        sEight.add("( (___) )");
+        sEight.add(" \\     / ");
+        sEight.add(" / ___ \\ ");
+        sEight.add("( (   ) )");
+        sEight.add("( (___) )");
+        sEight.add(" \\_____/ ");
+
+        ArrayList<String> sNine = new ArrayList<>();
+        sNine.add("  _____  ");
+        sNine.add(" / ___ \\ ");
+        sNine.add("( (   ) )");
+        sNine.add("( (___) |");
+        sNine.add(" \\____  |");
+        sNine.add("      ) |");
+        sNine.add("/\\____) )");
+        sNine.add("\\______/ ");
+
+        oneDigitNums.put(0,sZero);
+        oneDigitNums.put(1,sOne);
+        oneDigitNums.put(2,sTwo);
+        oneDigitNums.put(3,sThree);
+        oneDigitNums.put(4,sFour);
+        oneDigitNums.put(5,sFive);
+        oneDigitNums.put(6,sSix);
+        oneDigitNums.put(7,sSeven);
+        oneDigitNums.put(8,sEight);
+        oneDigitNums.put(9,sNine);
+
+        return oneDigitNums.get(requestedNum);
     }
 }

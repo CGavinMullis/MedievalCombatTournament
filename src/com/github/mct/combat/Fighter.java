@@ -5,7 +5,8 @@ import com.github.mct.combat.weapons.WeaponArchetype;
 
 // Import Weapon Class
 import com.github.mct.combat.weapons.Weapon;
-import org.jetbrains.annotations.NotNull;
+import com.github.mct.combat.weapons.WeaponFactory;
+//import org.jetbrains.annotations.NotNull;
 
 // Randomization for dice rolling
 import java.util.Random;
@@ -25,39 +26,42 @@ public class Fighter{
     private int defenseRating;      // defense rating of fighter
     private String name;            // name of fighter
     private Weapon weapon;          // fighter's weapon
-    private WeaponArchetype weaponArchetype;    // fighter's weapon archetype
-    private int damage;             // damage taken
-    Random rand;                    // random number generator for dice rolling
+   // private WeaponArchetype weaponArchetype;    // fighter's weapon archetype
+   // private int damage;             // damage taken
+   // Random rand;                    // random number generator for dice rolling
 
     /**
      * Constructor for a fighter that sets the weapon and seeds the random number generator for rolling the dice.
      */
-    public Fighter(WeaponArchetype weapon_Archetype)
+    public Fighter(String n, Weapon w, int str, int r, int s)
     {
-//        this.weapon = MakeWeapon(weapon_Archetype);     // set fighter's weapon
-//        this.weaponArchetype = weapon_Archetype;        // set fighter's weapon archetype
-        this.damage = 0;
-        this.attackRating = 0;
-        this.defenseRating = 0;
+        this.weapon = w;     // set fighter's weapon
+        this.name = n;
+        this.strength = str;
+        this.reach = r;
+        this.speed = s;
+        this.attackRating = this.weapon.getAttackRating();
+        this.defenseRating = this.weapon.getDefenseRating();
     }
 
     /**
      * Overloaded copy constructor
      * @param fighter the fighter to copy from
      */
-    public Fighter(@NotNull Fighter fighter)
+    /*
+    public Fighter(Fighter fighter)
     {
 //        this.weapon = MakeWeapon(fighter.GetWeaponArchetype());     // set fighter's weapon
 //        this.weaponArchetype = fighter.GetWeaponArchetype();        // set fighter's weapon archetype
-        this.strength = fighter.GetStrength();                      // set fighter's strength
-        this.reach = fighter.GetReach();                            // set fighter's reach
-        this.speed = fighter.GetSpeed();                            // set fighter's speed
-        this.name = fighter.GetName();                              // set fighter's name
+        this.strength = fighter.getStrength();                      // set fighter's strength
+        this.reach = fighter.getReach();                            // set fighter's reach
+        this.speed = fighter.getSpeed();                            // set fighter's speed
+        this.name = fighter.getName();                              // set fighter's name
         this.damage = 0;
     }
-
+/*
     /*****************************FOR DEBUGGING ONLY**************************/
-    public int GetDamage()
+    /*public int GetDamage()
     {
         return damage;
     }
@@ -74,45 +78,48 @@ public class Fighter{
     /**
      * Sets the fighter's stats using input parameters.
      */
+    /*
     public void StoreAttributes(int Strength, int Reach, int Speed) {
         strength = Strength;
         reach = Reach;
         speed = Speed;
-        name = GetRandomName();
+        name = null;
     }
 
     /**
      * Increments attack rating.
      */
+    /*
     public void IncrementAttackRating(){
         attackRating++;
     }
     /**
      * Increments defense rating.
      */
+    /*
     public void IncrementDefenseRating(){
         defenseRating++;
     }
-
+/*
     /**
      * Checks current fighter's strength score against opponent fighter's strength score.
      */
-    public boolean isStrongerThan(@NotNull Fighter opponent){
-            if (strength > opponent.GetStrength()) return true;
+    public boolean StrongerThan(Fighter opponent){
+            if (strength > opponent.getStrength()) return true;
             else return false;
     }
     /**
      * Checks current fighter's reach score against opponent fighter's reach score.
      */
-    public boolean canReachFartherThan(@NotNull Fighter opponent){
-        if (reach > opponent.GetReach()) return true;
+    public boolean LongerReachedThan(Fighter opponent){
+        if (reach > opponent.getReach()) return true;
         else return false;
     }
     /**
      * Checks current fighter's speed score against opponent fighter's speed score.
      */
-    public boolean isFasterThan(@NotNull Fighter opponent){
-        if (speed > opponent.GetSpeed()) return true;
+    public boolean FasterThan(Fighter opponent){
+        if (speed > opponent.getSpeed()) return true;
         else return false;
     }
     /**
@@ -120,7 +127,8 @@ public class Fighter{
      *
      * @return sum of six sided dice rolls for every attack point on weapon
      */
-    public int GetAttackPerformance(){
+    /*
+    public int getAttackPerformance(){
         int attackPerf = 0;                                 // initialize sum of attack performance to zero
         rand = new Random();                                // seed random number generator
         for(int i = 0; i < attackRating; i++)
@@ -135,7 +143,8 @@ public class Fighter{
      *
      * @return sum of six sided dice rolls for every defense point on weapon
      */
-    public int GetDefensePerformance(){
+    /*
+    public int getDefensePerformance(){
         int defensePerf = 0;                                // initialize sum of defense performance to zero
         rand = new Random();                                // seed random number generator
         for(int i = 0; i < defenseRating; i++)
@@ -150,7 +159,7 @@ public class Fighter{
      *
      * @return Returns strength.
      */
-    public int GetStrength(){
+    public int getStrength(){
         return strength;
     }
 
@@ -159,7 +168,7 @@ public class Fighter{
      *
      * @return Returns reach.
      */
-    public int GetReach(){
+    public int getReach(){
         return reach;
     }
 
@@ -168,7 +177,7 @@ public class Fighter{
      *
      * @return Returns speed.
      */
-    public int GetSpeed(){
+    public int getSpeed(){
         return speed;
     }
 
@@ -177,7 +186,7 @@ public class Fighter{
      *
      * @return Returns name.
      */
-    public String GetName(){
+    public String getName(){
         return name;
     }
 
@@ -186,7 +195,7 @@ public class Fighter{
      *
      * @return Returns attack rating.
      */
-    public int GetAttackRating(){
+    public int GetAttackPerformance(){
         return attackRating;
     }
 
@@ -195,27 +204,18 @@ public class Fighter{
      *
      * @return Returns defense rating.
      */
-    public int GetDefenseRating(){
+    public int GetDefensePerformance(){
         return defenseRating;
     }
 
-    /**
-     * Chooses name randomly from array of fantasy names
-     * @return random name
-     */
-    private String GetRandomName()
-    {
-        // fantasy names provided by https://nameberry.com/userlist/view/28759
-        rand = new Random();                        // seed random number generator
-        String[] names = {"Abrielle","Adair","Adara","Adriel","Aiyana","Alissa","Alixandra","Altair","Amara","Anatola","Anya","Arcadia","Ariadne","Arianwen","Aurelia","Aurelian","Aurelius","Avalon","Acalia","Alaire","Auristela","Bastian","Breena","Brielle","Briallan","Briseis","Cambria","Cara","Carys","Caspian","Cassia","Cassiel","Cassiopeia","Cassius","Chaniel","Cora","Corbin","Cyprian","Daire","Darius","Destin","Drake","Drystan","Dagen","Devlin","Devlyn","Eira","Eirian","Elysia","Eoin","Evadne","Eliron","Evanth","Fineas","Finian","Fyodor","Gareth","Gavriel","Griffin","Guinevere","Gaerwn","Ginerva","Hadriel","Hannelore","Hermione","Hesperos","Iagan","Ianthe","Ignacia","Ignatius","Iseult","Isolde","Jessalyn","Kara","Kerensa","Korbin","Kyler","Kyra","Katriel","Kyrielle","Leala","Leila","Lilith","Liora","Lucien","Lyra","Leira","Liriene","Liron","Maia","Mathieu","Mireille","Mireya","Maylea","Meira","Natania","Nerys","Nuriel","Nyssa","Neirin","Nyfain","Oisin","Oralie","Orion","Orpheus","Ozara","Oleisa","Orinthea","Peregrine","Persephone","Perseus","Petronela","Phelan","Pryderi","Pyralia","Pyralis","Qadira","Quintessa","Quinevere","Raisa","Remus","Rhyan","Rhydderch","Riona","Renfrew","Saoirse","Sarai","Sebastian","Seraphim","Seraphina","Sirius","Sorcha","Saira","Sarielle","Serian","Severin","Tavish","Tearlach","Terra","Thalia","Thaniel","Theia","Torian","Torin","Tressa","Tristana","Uriela","Urien","Ulyssia","Vanora","Vespera","Vasilis","Xanthus","Xara","Xylia","Yadira","Yseult","Yakira","Yeira","Yeriel","Yestin","Zaira","Zephyr","Zora","Zorion","Zaniel","Zarek"};
-        int choice = rand.nextInt(166);     // randomly choose one out of the 167 names
-        return names[choice];                      // return chosen name
-    }
+    public Weapon getWeapon() {return weapon;}
 
+ /*
     /**
      * Increment damage on current fighter
      * @param Damage damage taken
      */
+ /*
     public void TakeDamage(int Damage)
     {
         if(Damage > 0) damage += Damage;    // only take damage if it is a positive value
@@ -225,6 +225,7 @@ public class Fighter{
      * Tells when the fighter is at half health
      * @return if the fighter is bloodied or not
      */
+ /*
     public boolean IsBloodied()
     {
         if(damage >= 5) return true;
@@ -235,6 +236,7 @@ public class Fighter{
      * Tells when the fighter has been defeated
      * @return if the fighter is defeated or not
      */
+ /*
     public boolean IsDefeated()
     {
         if(damage >= 10) { return true; }
@@ -246,8 +248,9 @@ public class Fighter{
      *
      * @return Returns weapon archetype.
      */
+ /*
     public WeaponArchetype GetWeaponArchetype()
     {
         return weaponArchetype;
-    }
+    } */
 }

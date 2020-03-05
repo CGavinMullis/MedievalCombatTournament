@@ -1,5 +1,6 @@
 package com.github.mct.ui;
 
+import com.github.mct.tournament.Match;
 import com.github.mct.tournament.Tournament;
 import com.github.mct.tournament.TournamentArchetype;
 
@@ -19,8 +20,6 @@ import java.util.Scanner;
 public class Menu {
 
     private Tournament currTourn;
-
-    private Jester currJester;
 
     private static Menu single_instance = null;
 
@@ -130,14 +129,15 @@ public class Menu {
             case "tournament":
                 switch (selection) {
                     case "1":
+                        clearConsole();
+                        System.out.println(currTourn.determineWinner().getName() + " WON!");
+                        promptEnterKey();
                         break;
                     case "2":
                         defaultMenu();
                         return;
                     default:
                         System.out.println("| Button selection must be an integer value from 1 through " + menuOptions.size());
-                        currJester = new Jester();
-                        currJester.commentOnStart();
                         promptEnterKey();
                 }
                 break;
@@ -235,7 +235,7 @@ public class Menu {
         System.out.print("| Number of matches for the Long Weapon sub-tournament (choice must be a power of two): ");
         selection = in.nextLine();
 
-        while(!isNumeric(selection) || Integer.parseInt(selection) % 2 != 0)
+        while(!isNumeric(selection) || this.isNotPowerOfTwo(Integer.parseInt(selection)))
         {
             System.out.println(" Selection must be an integer of the power of two...");
             promptEnterKey();
@@ -269,7 +269,7 @@ public class Menu {
         System.out.print("| Number of matches for the Medium Weapon sub-tournament (choice must be a power of two): ");
         selection = in.nextLine();
 
-        while(!isNumeric(selection) || Integer.parseInt(selection) % 2 != 0)
+        while(!isNumeric(selection) || this.isNotPowerOfTwo(Integer.parseInt(selection)))
         {
             System.out.println(" Selection must be an integer of the power of two...");
             promptEnterKey();
@@ -303,7 +303,7 @@ public class Menu {
         System.out.print("| Number of matches for the Short Weapon sub-tournament (choice must be a power of two): ");
         selection = in.nextLine();
 
-        while(!isNumeric(selection) || Integer.parseInt(selection) % 2 != 0)
+        while(!isNumeric(selection) || this.isNotPowerOfTwo(Integer.parseInt(selection)))
         {
             System.out.println(" Selection must be an integer of the power of two...");
             promptEnterKey();
@@ -337,7 +337,7 @@ public class Menu {
         System.out.print("| Number of matches for the Wild sub-tournament (choice must be a power of two): ");
         selection = in.nextLine();
 
-        while(!isNumeric(selection) || Integer.parseInt(selection) % 2 != 0)
+        while(!isNumeric(selection) || this.isNotPowerOfTwo(Integer.parseInt(selection)))
         {
             System.out.println(" Selection must be an integer of the power of two...");
             promptEnterKey();
@@ -424,5 +424,20 @@ public class Menu {
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
+    }
+
+    private boolean isNotPowerOfTwo(int n)
+    {
+        //0 Matches are not Valid
+        if(n == 0)
+        {
+            return true;
+        }
+
+        //Intermediate Value for calculation
+        double intermediateVal = (Math.log(n) / Math.log(2));
+
+        //If ceiling and floor are the same value is a power of two
+        return (int) (Math.ceil(intermediateVal)) != (int) (Math.floor(intermediateVal));
     }
 }
