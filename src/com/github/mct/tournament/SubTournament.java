@@ -35,10 +35,12 @@ public class SubTournament {
      */
     private int numberOfMatches;
 
+    private ArrayList<Fighter> winners;
+
     /**
      * Stores the current round of the SubTournament
      */
-    private int j;
+    //private int j;
 
     /**
      * Creates a SubTournament of numberOfMatches Matches and (2*numberOfMatches) Fighters.
@@ -62,11 +64,12 @@ public class SubTournament {
             }
         }
 
+        this.winners = new ArrayList<>();
         //Set Number of Matches
         this.numberOfMatches = numberOfMatches;
 
         //Number of Rounds
-        j = 0;
+        //j = 0;
 
         //Set Archetype
         this.archetype = type;
@@ -74,9 +77,16 @@ public class SubTournament {
         //Create ArrayList of Matches
         this.matches = new ArrayList<>();
 
+        for (int i = 0 ; i < numberOfMatches ; i++)
+        {
+            Match m = new Match();
+            this.matches.add(m);
+        }
+
         //Create ArrayList of ArrayList of Matches.
         this.subMatches = new ArrayList<>();
     }
+
 
     /**
      * Constructor for a semi-final or final SubTournament
@@ -84,6 +94,7 @@ public class SubTournament {
      * @param fighterA The first Fighter of the SubTournament
      * @param fighterB The second Fighter of the SubTournament
      */
+    /*
     public SubTournament(Fighter fighterA, Fighter fighterB)
     {
         //Set Number of Matches to 1
@@ -100,7 +111,7 @@ public class SubTournament {
 
         //Create ArrayList of ArrayList of Matches.
         this.subMatches = new ArrayList<>();
-    }
+    } */
 
     /**
      * This function determines the winner of a SubTournament and returns a Fighter
@@ -109,8 +120,42 @@ public class SubTournament {
      */
     public Fighter determineWinner()
     {
+        boolean victor = false;
+
+        while(!victor) {
+
+            for (Match m : this.matches) {
+                winners.add(m.PlayMatch());
+            }
+
+            matches.clear();
+
+            if(winners.size() > 1)
+            {
+                for(int i = 0 ; i < winners.size() ; i = i + 2)
+                {
+                    Match m = new Match();
+                    m.setFighter1(winners.get(i));
+                    m.setFighter2(winners.get(i+1));
+                    matches.add(m);
+                }
+                winners.clear();
+            }
+            else
+            {
+                victor = true;
+            }
+        }
+
+        return winners.get(winners.size()-1);
+
+
+
+
+
+
         //If Not the Final Match
-        if(numberOfMatches != 1)
+    /*    if(numberOfMatches != 1)
         {
             //Create numberOfMatches Matches with TournamentArchetype
             for (int i = 0; i < numberOfMatches; i++)
@@ -193,7 +238,7 @@ public class SubTournament {
         this.subMatches.add(matches);
 
         //Return Winner from Final Match
-        return this.subMatches.get(j).get(0).determineWinner();
+        return this.subMatches.get(j).get(0).determineWinner(); */
     }
 
     /**
@@ -211,9 +256,9 @@ public class SubTournament {
      *
      * @return Arraylist of Arraylist of Matches. Contains each round of matches.
      */
-    public ArrayList<ArrayList<Match>> getMatches()
+    public ArrayList<Match> getMatches()
     {
-        return this.subMatches;
+        return this.matches;
     }
 
     /**
