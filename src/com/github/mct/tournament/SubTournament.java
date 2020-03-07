@@ -88,7 +88,7 @@ public class SubTournament {
     }
 
 
-    /**
+    /*/**
      * Constructor for a semi-final or final SubTournament
      *
      * @param fighterA The first Fighter of the SubTournament
@@ -252,9 +252,9 @@ public class SubTournament {
     }
 
     /**
-     * Returns the entire arraylist of subMatches, each index is a list of matches
+     * Returns the entire arraylist of matches
      *
-     * @return Arraylist of Arraylist of Matches. Contains each round of matches.
+     * @return Arraylist  of Matches. Contains each round of matches.
      */
     public ArrayList<Match> getMatches()
     {
