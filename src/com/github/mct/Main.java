@@ -1,5 +1,7 @@
 package com.github.mct;
 
+import com.github.mct.ui.Menu;
+
 /**
  * Creates, loads, and runs all needed classes for MCT
  *
@@ -10,7 +12,7 @@ package com.github.mct;
 class Main {
     public static void main(String[] args) {
 
-        System.out.println("Hello World!");
+        Menu m = Menu.getInstance();
 
     }
 }
