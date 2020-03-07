@@ -3,11 +3,7 @@ package com.github.mct.tournament;
 import com.github.mct.combat.Fighter;
 import com.github.mct.ui.Jester;
 
-import java.awt.image.AreaAveragingScaleFilter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Match stores Fighters, determines the winner of a fight, and uses Jester to comment on the status of the match.
@@ -20,6 +16,10 @@ public class Match {
     private Fighter fighter1;       // both fighters for the match
     private Fighter fighter2;       // both fighters for the match
     private Jester jester;          // jester for commentary
+
+    private int f1HP;
+
+    private int f2HP;
 
     protected int MAX_WIDTH;
 
@@ -59,12 +59,17 @@ public class Match {
         int f1DefenseAdvantage = 0;
         int f2AttackAdvantage = 0;
         int f2DefenseAdvantage = 0;
-        int f1HP = 10;
-        int f2HP = 10;
+        int roundNum = 1;
+        f1HP = 10;
+        f2HP = 10;
         boolean f1Bloodied = false;
         boolean f2Bloodied = false;
 
+        generateRoundTitle(roundNum);
+        print();
+
         this.jester.CommentOnStart();       // Jester comments before match begins
+        promptEnterKey();
 
         if (fighter1.StrongerThan(fighter2))
         {
@@ -95,51 +100,89 @@ public class Match {
 
         while(true)
         {
-            f2HP -= (rollD6(fighter1.GetAttackPerformance()+f1AttackAdvantage) - rollD6(fighter2.GetDefensePerformance()+f2DefenseAdvantage));
-            f1HP -= (rollD6(fighter2.GetAttackPerformance()+f2AttackAdvantage) - rollD6(fighter1.GetDefensePerformance()+f1DefenseAdvantage));
+            f2HP = strikeFighter (f2HP,rollD6(fighter1.GetAttackPerformance()+f1AttackAdvantage) - rollD6(fighter2.GetDefensePerformance()+f2DefenseAdvantage));
+            f1HP = strikeFighter (f1HP,rollD6(fighter2.GetAttackPerformance()+f2AttackAdvantage) - rollD6(fighter1.GetDefensePerformance()+f1DefenseAdvantage));
+            roundNum++;
+            generateRoundTitle(roundNum);
+            print();
 
-            if (f1HP <= 5)
-            {
-                if (f1HP <= 0)
-                {
-                    if(f2HP <= 0)
-                    {
-                        this.jester.CommentOnEnd(fighter1, fighter2);
-                        f1HP = 10;
-                        f2HP = 10;
-                        f1Bloodied = false;
-                        f2Bloodied = false;
-                        continue;
-                    }
-                    this.jester.CommentOnEnd(fighter1);
-                    return fighter2;
-                }
-                if(!f1Bloodied) {
-                    SignalMiddleToJester(fighter1);
-                    f1Bloodied = true;
-                }
-            }
-            if (f2HP <= 5)
+            if(f1HP <= 0)
             {
                 if (f2HP <= 0)
                 {
-                    this.jester.CommentOnEnd(fighter2);
-                    return fighter1;
+                    this.jester.CommentOnEnd(fighter1, fighter2);
+                    f1HP = 10;
+                    f2HP = 10;
+                    f1Bloodied = false;
+                    f2Bloodied = false;
+                    roundNum = 1;
+                    generateRoundTitle(roundNum);
+                    print();
+                    this.jester.CommentOnStart();
+                    promptEnterKey();
+                    continue;
                 }
-                if(!f2Bloodied) {
-                    SignalMiddleToJester(fighter2);
-                    f2Bloodied = true;
-                }
+                this.jester.CommentOnEnd(fighter1);
+                promptEnterKey();
+                return fighter2;
             }
+            if(f2HP <= 0)
+            {
+                if (f1HP <= 0)
+                {
+                    this.jester.CommentOnEnd(fighter1, fighter2);
+                    f1HP = 10;
+                    f2HP = 10;
+                    f1Bloodied = false;
+                    f2Bloodied = false;
+                    roundNum = 1;
+                    generateRoundTitle(roundNum);
+                    print();
+                    this.jester.CommentOnStart();
+                    promptEnterKey();
+                    continue;
+                }
+                this.jester.CommentOnEnd(fighter2);
+                promptEnterKey();
+                return fighter1;
+            }
+
+            if (f1HP <= 5 && !f1Bloodied) {
+                if (f2HP <= 5 && !f2Bloodied && !f1Bloodied) {
+                    SignalMiddleToJester(fighter1, fighter2);
+                    f1Bloodied = true;
+                    f2Bloodied = true;
+                    promptEnterKey();
+                    continue;
+                }
+                f1Bloodied = true;
+                SignalMiddleToJester(fighter1);
+                promptEnterKey();
+                continue;
+            }
+
+            if (f2HP <= 5 && !f2Bloodied) {
+                f2Bloodied = true;
+                SignalMiddleToJester(fighter2);
+                promptEnterKey();
+                continue;
+            }
+
+            promptEnterKey();
         }
     }
 
     /**
      * This function signals Jester that the match is halfway through
      */
-    public void SignalMiddleToJester(Fighter f)
+    private void SignalMiddleToJester(Fighter f)
     {
         this.jester.CommentOnMiddle(f);
+    }
+
+    private void SignalMiddleToJester(Fighter f1, Fighter f2)
+    {
+        this.jester.CommentOnMiddle(f1,f2);
     }
 
     private void print()
@@ -202,6 +245,23 @@ public class Match {
         return sum;
     }
 
+    private int strikeFighter(int f, int damage)
+    {
+        while(damage < 0)
+        {
+            damage++;
+        }
+
+        f -= damage;
+
+        while(f < 0 )
+        {
+            f++;
+        }
+
+        return f;
+    }
+
     private static void clearConsole(){
         try
         {
@@ -227,6 +287,10 @@ public class Match {
         ArrayList<String> sRound = new ArrayList<>();
         ArrayList<String> sDigit = this.generateRoundNumber(roundNum);
         String roundTitle = new String();
+        String f1Stats = new String();
+        String f2Stats = new String();
+        String line = new String();
+
         sRound.add(" _______  _______           _        ______  ");
         sRound.add("(  ____ )(  ___  )|\\     /|( (    /|(  __  \\ ");
         sRound.add("| (    )|| (   ) || )   ( ||  \\  ( || (  \\  )");
@@ -242,11 +306,51 @@ public class Match {
             roundTitle += stringInsert(lineTemplate, s, (MAX_WIDTH/2) - (s.length()/2)-1);
         }
 
+        roundTitle += stringInsert(lineTemplate, emptySpace,1);
+
+        f1Stats = this.fighter1.getName();
+        f2Stats = this.fighter2.getName();
+        line = stringInsert(lineTemplate, f1Stats, (MAX_WIDTH/8));
+        line = stringInsert(line, f2Stats, MAX_WIDTH-(MAX_WIDTH/4));
+        roundTitle += line;
+
+        f1Stats = "Strength: " + this.fighter1.getStrength();
+        f2Stats = "Strength: " + this.fighter2.getStrength();
+        line = stringInsert(lineTemplate, f1Stats, (MAX_WIDTH/8));
+        line = stringInsert(line, f2Stats, MAX_WIDTH-(MAX_WIDTH/4));
+        roundTitle += line;
+
+        f1Stats = "Reach: " + this.fighter1.getReach();
+        f2Stats = "Reach: " + this.fighter2.getReach();
+        line = stringInsert(lineTemplate, f1Stats, (MAX_WIDTH/8));
+        line = stringInsert(line, f2Stats, MAX_WIDTH-(MAX_WIDTH/4));
+        roundTitle += line;
+
+        f1Stats = "Speed: " + this.fighter1.getSpeed();
+        f2Stats = "Speed: " + this.fighter2.getSpeed();
+        line = stringInsert(lineTemplate, f1Stats, (MAX_WIDTH/8));
+        line = stringInsert(line, f2Stats, MAX_WIDTH-(MAX_WIDTH/4));
+        roundTitle += line;
+
+        f1Stats = "HP: " + this.f1HP;
+        f2Stats = "HP: " + this.f2HP;
+        line = stringInsert(lineTemplate, f1Stats, (MAX_WIDTH/8));
+        line = stringInsert(line, f2Stats, MAX_WIDTH-(MAX_WIDTH/4));
+        roundTitle += line;
+
+        windowContent = roundTitle;
     }
 
     private ArrayList<String> generateRoundNumber(int requestedNum)
     {
         Map<Integer, ArrayList<String>> oneDigitNums = new HashMap<>();
+        ArrayList<Integer> digits = new ArrayList<>();
+        ArrayList<String> finalNumber = new ArrayList<>();
+        while (requestedNum > 0)
+        {
+            digits.add(requestedNum % 10);
+            requestedNum = requestedNum/10;
+        }
 
         ArrayList<String> sZero = new ArrayList<>();
         sZero.add(" _______ ");
@@ -359,6 +463,33 @@ public class Match {
         oneDigitNums.put(8,sEight);
         oneDigitNums.put(9,sNine);
 
-        return oneDigitNums.get(requestedNum);
+        if(digits.size() > 1)
+        {
+            //String temp = new String();
+            int count = 0;
+            for (String s : oneDigitNums.get(digits.get(0)))
+            {
+                finalNumber.add(s);
+            }
+            for(int i = 1; i < digits.size() ; i++)
+            {
+                for(String s : oneDigitNums.get(digits.get(i)))
+                {
+                    finalNumber.set(count, s + " " + finalNumber.get(count));
+                    count++;
+                }
+                count = 0;
+            }
+            return finalNumber;
+        }
+        else {
+            return oneDigitNums.get(digits.get(0));
+        }
+    }
+
+    private void promptEnterKey(){
+        System.out.println("Press \"ENTER\" to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 }

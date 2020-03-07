@@ -20,6 +20,12 @@ public class Jester {
 
     private Match currMatch;
 
+    private boolean strengthDiff;
+
+    private boolean reachDiff;
+
+    private boolean speedDiff;
+
     private enum jesterMood {
         HAPPY,
         GRUMPY;
@@ -40,83 +46,108 @@ public class Jester {
 
 
     public void CommentOnStart() {
-        clearConsole();
-        physicalAttribute comparisonPoint = getRandomAttribute();
+        //clearConsole();
+        physicalAttribute comparisonPoint;
         Fighter f1 = currMatch.getFighter1();
         Fighter f2 = currMatch.getFighter2();
-        String namePredictedWinner;
-        String namePredictedLoser;
+        String namePredictedWinner = null;
+        String namePredictedLoser = null;
+        String comment = null;
+        strengthDiff = true;
+        reachDiff = true;
+        speedDiff = true;
 
-        switch (comparisonPoint)
-        {
-            case STRENGTH:
-                if (f1.StrongerThan(f2))
-                {
-                    favFighter = f1;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f2.getName();
-                }
-                else
-                {
-                    favFighter = f2;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f1.getName();
-                }
-                System.out.println(generateComment(namePredictedWinner + " seems awful strong, I'm not so sure about " + namePredictedLoser + "..."));
-                break;
-            case REACH:
-                if (f1.LongerReachedThan(f2))
-                {
-                    favFighter = f1;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f2.getName();
-                }
-                else
-                {
-                    favFighter = f2;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f1.getName();
-                }
-                System.out.println(generateComment(namePredictedLoser + " has tiny little arms! They'll be no match for the reach on " + namePredictedWinner + "!"));
-                break;
-            case SPEED:
-                if (f1.FasterThan(f2))
-                {
-                    favFighter = f1;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f2.getName();
-                }
-                else
-                {
-                    favFighter = f2;
-                    namePredictedWinner = favFighter.getName();
-                    namePredictedLoser = f1.getName();
-                }
-                System.out.println(generateComment(namePredictedWinner + " is incredibly quick on their feet! " + namePredictedLoser + " on the other hand just got my joke from last week..."));
-                break;
+
+        while(comment == null && (strengthDiff || reachDiff || speedDiff)) {
+            comparisonPoint = getRandomAttribute();
+            switch (comparisonPoint) {
+                case STRENGTH:
+                    if (strengthDiff) {
+                        if (f1.StrongerThan(f2)) {
+                            favFighter = f1;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f2.getName();
+                        } else if (f2.StrongerThan(f1)) {
+                            favFighter = f2;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f1.getName();
+                        } else {
+                            strengthDiff = false;
+                            break;
+                        }
+                        comment = generateComment(namePredictedWinner + " seems awful strong, I'm not so sure about " + namePredictedLoser + "...");
+                    }
+                    break;
+                case REACH:
+                    if(reachDiff) {
+                        if (f1.LongerReachedThan(f2)) {
+                            favFighter = f1;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f2.getName();
+                        } else if (f2.LongerReachedThan(f1)) {
+                            favFighter = f2;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f1.getName();
+                        } else {
+                            reachDiff = false;
+                            break;
+                        }
+                        comment = generateComment(namePredictedLoser + " has tiny little arms! They'll be no match for the reach on " + namePredictedWinner + "!");
+                    }
+                    break;
+                case SPEED:
+                    if(speedDiff) {
+                        if (f1.FasterThan(f2)) {
+                            favFighter = f1;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f2.getName();
+                        } else if (f2.FasterThan((f1))) {
+                            favFighter = f2;
+                            namePredictedWinner = favFighter.getName();
+                            namePredictedLoser = f1.getName();
+                        } else {
+                            speedDiff = false;
+                            break;
+                        }
+                        comment = generateComment(namePredictedWinner + " is incredibly quick on their feet! " + namePredictedLoser + " on the other hand just got my joke from last week...");
+                    }
+                    break;
+            }
         }
-        promptEnterKey();
+
+        if(comment == null)
+        {
+            comment = generateComment("Wow! Both of these fighters seem equally matched! I have no idea who is going to win!");
+        }
+        System.out.println(comment);
+        //promptEnterKey();
 
         //System.out.println(generateComment("Death Everywhere! No seriously, like it is everywhere! For real though, have you looked recently? It's crazy, like really crazy. " +
         //        "Just saying... Oh! It's cake time! My favorite time of the day!"));
     }
 
     public void CommentOnMiddle(Fighter f) {
-        clearConsole();
+        //clearConsole();
         System.out.println(generateComment(f.getName() + " got Bloodied!"));
-        promptEnterKey();
+        //promptEnterKey();
+    }
+
+    public void CommentOnMiddle(Fighter f1, Fighter f2) {
+        //clearConsole();
+        System.out.println(generateComment(f1.getName() + " and " + f2.getName() + " got Bloodied!"));
+        //promptEnterKey();
     }
 
     public void CommentOnEnd(Fighter f) {
-        clearConsole();
+       //clearConsole();
         System.out.println(generateComment(f.getName() + " was taken Down!!"));
-        promptEnterKey();
+        //promptEnterKey();
     }
 
     public void CommentOnEnd(Fighter f1, Fighter f2) {
-        clearConsole();
+        //clearConsole();
         System.out.println(generateComment(f1.getName() + " and " + f2.getName() + " knocked each other out. Silly, now we have to start over!"));
-        promptEnterKey();
+        //promptEnterKey();
     }
 
     private String generateComment(String content)
