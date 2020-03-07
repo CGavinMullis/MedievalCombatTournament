@@ -129,8 +129,8 @@ public class Tournament {
 
             for (Match m : temp.getMatches())
             {
-                f1 = new Fighter(GetRandomName(), WF.getWeapon(weaponType[i]), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
-                f2 = new Fighter(GetRandomName(), WF.getWeapon(weaponType[i]), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
+                f1 = new Fighter(GetRandomName(), WF.MakeWeapon(weaponType[i]), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
+                f2 = new Fighter(GetRandomName(), WF.MakeWeapon(weaponType[i]), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
                 m.setFighter1(f1);
                 m.setFighter2(f2);
             }
@@ -144,8 +144,8 @@ public class Tournament {
 
         for (Match m : temp.getMatches())
         {
-            f1 = new Fighter(GetRandomName(), WF.getWeapon(getRandomWeaponType()), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
-            f2 = new Fighter(GetRandomName(), WF.getWeapon(getRandomWeaponType()), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
+            f1 = new Fighter(GetRandomName(), WF.MakeWeapon(getRandomWeaponType()), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
+            f2 = new Fighter(GetRandomName(), WF.MakeWeapon(getRandomWeaponType()), (r.nextInt(9)+1),(r.nextInt(9)+1),(r.nextInt(9)+1));
             m.setFighter1(f1);
             m.setFighter2(f2);
         }

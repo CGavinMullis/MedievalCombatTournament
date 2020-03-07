@@ -118,6 +118,7 @@ public class Match {
                     roundNum = 1;
                     generateRoundTitle(roundNum);
                     print();
+                    promptEnterKey();
                     this.jester.CommentOnStart();
                     promptEnterKey();
                     continue;
@@ -138,6 +139,7 @@ public class Match {
                     roundNum = 1;
                     generateRoundTitle(roundNum);
                     print();
+                    promptEnterKey();
                     this.jester.CommentOnStart();
                     promptEnterKey();
                     continue;
