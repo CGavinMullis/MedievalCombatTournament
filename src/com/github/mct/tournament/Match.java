@@ -13,26 +13,17 @@ import java.util.*;
  */
 public class Match {
 
-    private Fighter fighter1;       // both fighters for the match
-    private Fighter fighter2;       // both fighters for the match
-    private Jester jester;          // jester for commentary
+    private Fighter fighter1, fighter2;     // fighters for the match
+    private Jester jester;                  // jester for commentary
+    private int f1HP, f2HP;                 // fighter's health points
 
-    private int f1HP;
-
-    private int f2HP;
-
+    // for output formatting
     protected int MAX_WIDTH;
-
     protected String emptySpace;
-
     protected String lineTemplate;
-
     protected String windowBorder;
-
     protected String windowDivider;
-
     protected String windowContent;
-
 
     /**
      * Overloaded constructor for semifinals and finals, using winners from previous matches
@@ -55,102 +46,85 @@ public class Match {
      */
     public Fighter PlayMatch()
     {
-        int f1AttackAdvantage = 0;
+        int f1AttackAdvantage = 0;      // reset all advantages at the beginning of the match
         int f1DefenseAdvantage = 0;
         int f2AttackAdvantage = 0;
         int f2DefenseAdvantage = 0;
-        int roundNum = 1;
-        f1HP = 10;
+        int roundNum = 1;               // first round
+        f1HP = 10;                      // both fighters at full health
         f2HP = 10;
-        boolean f1Bloodied = false;
+        boolean f1Bloodied = false;     // neither fighter bloodied
         boolean f2Bloodied = false;
 
-        generateRoundTitle(roundNum);
+        generateRoundTitle(roundNum);   // output formatting
         print();
 
         this.jester.CommentOnStart();       // Jester comments before match begins
         promptEnterKey();
 
-        if (fighter1.StrongerThan(fighter2))
-        {
+        // check strengths and give the stronger fighter an attack advantage
+        if (fighter1.StrongerThan(fighter2)){
             f1AttackAdvantage++;
         }
-        else if (fighter2.StrongerThan(fighter1))
-        {
+        else if (fighter2.StrongerThan(fighter1)){
             f2AttackAdvantage++;
         }
-        if (fighter1.LongerReachedThan(fighter2))
-        {
+        // check reaches and give the farther reached fighter a defense advantage
+        if (fighter1.LongerReachedThan(fighter2)){
             f1DefenseAdvantage++;
         }
-        else if(fighter2.LongerReachedThan(fighter1))
-        {
+        else if(fighter2.LongerReachedThan(fighter1)){
             f2DefenseAdvantage++;
         }
-        if (fighter1.FasterThan(fighter2) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
-        {
-            f1AttackAdvantage++;
-            f1DefenseAdvantage++;
-        }
-        else if(fighter2.FasterThan(fighter1) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
-        {
-            f2AttackAdvantage++;
-            f2DefenseAdvantage++;
+        // only if the fighters have different types of weapons
+        if(fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype()){
+            // check speeds and give the faster fighter an attack and defense advantage
+            if (fighter1.FasterThan(fighter2)){
+                f1AttackAdvantage++;
+                f1DefenseAdvantage++;
+            }
+            else if(fighter2.FasterThan(fighter1)){
+                f2AttackAdvantage++;
+                f2DefenseAdvantage++;
+            }
         }
 
         while(true)
         {
+            // calculate new health points
             f2HP = strikeFighter (f2HP,rollD6(fighter1.GetAttackPerformance()+f1AttackAdvantage) - rollD6(fighter2.GetDefensePerformance()+f2DefenseAdvantage));
             f1HP = strikeFighter (f1HP,rollD6(fighter2.GetAttackPerformance()+f2AttackAdvantage) - rollD6(fighter1.GetDefensePerformance()+f1DefenseAdvantage));
-            roundNum++;
-            generateRoundTitle(roundNum);
+            roundNum++;                         // increment round number
+            generateRoundTitle(roundNum);       // output formatting
             print();
 
-            if(f1HP <= 0)
-            {
-                if (f2HP <= 0)
-                {
-                    this.jester.CommentOnEnd(fighter1, fighter2);
-                    f1HP = 10;
+            if(f1HP <= 0){          // if the first fighter is defeated
+                if (f2HP <= 0){     // and the second fighter is also defeated
+                    this.jester.CommentOnEnd(fighter1, fighter2);   // Jester comments
+                    f1HP = 10;      // reset all fighter conditions and round number
                     f2HP = 10;
                     f1Bloodied = false;
                     f2Bloodied = false;
                     roundNum = 1;
-                    generateRoundTitle(roundNum);
+                    generateRoundTitle(roundNum);   // output formatting
                     print();
                     promptEnterKey();
-                    this.jester.CommentOnStart();
+                    this.jester.CommentOnStart();   // Jester comments on start
                     promptEnterKey();
-                    continue;
+                    continue;       // start another round
                 }
-                this.jester.CommentOnEnd(fighter1);
+                this.jester.CommentOnEnd(fighter1);     // Jester comments on defeat of fighter 1
                 promptEnterKey();
-                return fighter2;
+                return fighter2;                        // fighter 2 is the winner
             }
-            if(f2HP <= 0)
-            {
-                if (f1HP <= 0)
-                {
-                    this.jester.CommentOnEnd(fighter1, fighter2);
-                    f1HP = 10;
-                    f2HP = 10;
-                    f1Bloodied = false;
-                    f2Bloodied = false;
-                    roundNum = 1;
-                    generateRoundTitle(roundNum);
-                    print();
-                    promptEnterKey();
-                    this.jester.CommentOnStart();
-                    promptEnterKey();
-                    continue;
-                }
-                this.jester.CommentOnEnd(fighter2);
+            if(f2HP <= 0){          // if the second fighter is defeated
+                this.jester.CommentOnEnd(fighter2);     // Jester comments on the defeat of fighter 2
                 promptEnterKey();
-                return fighter1;
+                return fighter1;                        // fighter 1 is the winner
             }
 
             if (f1HP <= 5 && !f1Bloodied) {
-                if (f2HP <= 5 && !f2Bloodied && !f1Bloodied) {
+                if (f2HP <= 5 && !f2Bloodied) {
                     SignalMiddleToJester(fighter1, fighter2);
                     f1Bloodied = true;
                     f2Bloodied = true;
@@ -175,18 +149,26 @@ public class Match {
     }
 
     /**
-     * This function signals Jester that the match is halfway through
+     * Signals to Jester to comment on the middle of the match
+     * @param fighter which fighter was bloodied
      */
-    private void SignalMiddleToJester(Fighter f)
-    {
-        this.jester.CommentOnMiddle(f);
+    private void SignalMiddleToJester(Fighter fighter){
+        this.jester.CommentOnMiddle(fighter);
     }
 
-    private void SignalMiddleToJester(Fighter f1, Fighter f2)
+    /**
+     * Signals to Jester to comment on the middle of the match
+     * @param fighter1 this fighter was bloodied
+     * @param fighter2 this fighter was also bloodied
+     */
+    private void SignalMiddleToJester(Fighter fighter1, Fighter fighter2)
     {
-        this.jester.CommentOnMiddle(f1,f2);
+        this.jester.CommentOnMiddle(fighter1,fighter2);
     }
 
+    /**
+     * For output formatting
+     */
     private void print()
     {
         String content;
@@ -201,6 +183,13 @@ public class Match {
         System.out.print(content);
     }
 
+    /**
+     * For output formatting
+     * @param target
+     * @param insert
+     * @param position
+     * @return
+     */
     protected String stringInsert(String target, String insert, int position)
     {
         int length = target.length();
@@ -217,53 +206,76 @@ public class Match {
         return builder.toString();
     }
 
-
+    /**
+     * Accessor for first fighter
+     * @return fighter1
+     */
     public Fighter getFighter1() {
         return fighter1;
     }
 
+    /**
+     * Accessor for second fighter
+     * @return fighter2
+     */
     public Fighter getFighter2() {
         return fighter2;
     }
 
-    public void setFighter1(Fighter f)
-    {
-        fighter1 = f;
+    /**
+     * Mutator for first fighter
+     * @param fighter to be first fighter
+     */
+    public void setFighter1(Fighter fighter){
+        fighter1 = fighter;
     }
 
-    public void setFighter2(Fighter f)
+    /**
+     * Mutator for second fighter
+     * @param fighter to be second fighter
+     */
+    public void setFighter2(Fighter fighter)
     {
-        fighter2 = f;
+        fighter2 = fighter;
     }
 
+    /**
+     * Rolls a six-sided die by generating random numbers between 1 and 6
+     * @param rolls how many dice to roll
+     * @return the sum of the dice rolls
+     */
     private int rollD6(int rolls)
     {
-        Random r = new Random();
+        Random random = new Random();                // seed random number generator
         int sum = 0;
-        for (int i = 0 ; i < rolls ; i++)
-        {
-            sum += r.nextInt(5)+1;
+        for (int i = 0 ; i < rolls ; i++){
+            sum += random.nextInt(6)+1;
         }
         return sum;
     }
 
-    private int strikeFighter(int f, int damage)
+    /**
+     * Decrement fighter's HP according to damage taken
+     * @param fightersHP the fighter's HP
+     * @param damage the damage taken
+     * @return the fighter's new HP
+     */
+    private int strikeFighter(int fightersHP, int damage)
     {
-        while(damage < 0)
-        {
-            damage++;
+        if(damage <= 0){            // if the damage is less than or equal to zero
+            return fightersHP;      // fighter takes no damage
         }
+        fightersHP -= damage;       // subtract damage from fighter's HP
 
-        f -= damage;
-
-        while(f < 0 )
-        {
-            f++;
+        if(fightersHP < 0 ){        // prevent fighter's HP from being negative
+            fightersHP = 0;
         }
-
-        return f;
+        return fightersHP;
     }
 
+    /**
+     * Output formatting
+     */
     private static void clearConsole(){
         try
         {
@@ -284,6 +296,9 @@ public class Match {
         }
     }
 
+    /**
+     * Output formatting
+     */
     private void generateRoundTitle(int roundNum)
     {
         ArrayList<String> sRound = new ArrayList<>();
@@ -343,6 +358,9 @@ public class Match {
         windowContent = roundTitle;
     }
 
+    /**
+     * Output formatting
+     */
     private ArrayList<String> generateRoundNumber(int requestedNum)
     {
         Map<Integer, ArrayList<String>> oneDigitNums = new HashMap<>();
@@ -489,6 +507,9 @@ public class Match {
         }
     }
 
+    /**
+     * Output formatting
+     */
     private void promptEnterKey(){
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
