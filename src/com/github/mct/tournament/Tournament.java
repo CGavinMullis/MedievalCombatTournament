@@ -215,6 +215,12 @@ public class Tournament {
         this.windowContent = lineUp;
         print();
     }
+
+    /**
+     * This function takes a normal string and returns an ArrayList containing an ASCII art stylized version of that string.
+     *
+     * @param name
+     */
     private ArrayList<String> generateStylizedName(String name)
     {
         Map<Character, ArrayList<String>> stylizedLetters = new HashMap<>();
@@ -554,6 +560,11 @@ public class Tournament {
 
     }
 
+    /**
+     * Displays the specified tournament type header.
+     *
+     * @param type Type of tournament header to display
+     */
     private void announceTournament(TournamentArchetype type)
     {
         ArrayList<String> currTourn = generateStylizedName(type.toString());
@@ -583,6 +594,9 @@ public class Tournament {
         print();
     }
 
+    /**
+     * Displays the semi-finals header.
+     */
     private void announceSemis()
     {
         ArrayList<String> currTourn = generateStylizedName("Semi-Finals");
@@ -598,6 +612,9 @@ public class Tournament {
         print();
     }
 
+    /**
+     * Displays the finals header.
+     */
     private void announceFinals()
     {
         ArrayList<String> currTourn = generateStylizedName("Finals");
@@ -613,6 +630,9 @@ public class Tournament {
         print();
     }
 
+    /**
+     * This function prints the contents of the menu to the terminal
+     */
     private void print()
     {
         String content;
@@ -625,6 +645,15 @@ public class Tournament {
         System.out.print(content);
     }
 
+    /**
+     * This function inserts the insert String into the target String at the position specified by position.
+     *
+     * @param target String being inserted into.
+     * @param insert String to be inserted into target String.
+     * @param position Integer position specifying where to insert the insert String into the target String.
+     *
+     * @return Returns target string with insertion from insert string
+     */
     protected String stringInsert(String target, String insert, int position)
     {
         int length = target.length();
@@ -641,12 +670,18 @@ public class Tournament {
         return builder.toString();
     }
 
+    /**
+     * This function prompts the user to press the ENTER key to proceed
+     */
     protected void promptEnterKey(){
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
     }
 
+    /**
+     * This function clears the terminal of the content currently being displayed.
+     */
     protected static void clearConsole(){
         try
         {

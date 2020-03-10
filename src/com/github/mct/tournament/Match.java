@@ -279,6 +279,9 @@ public class Match {
         return result;
     }
 
+    /**
+     * This function clears the terminal of the content currently being displayed.
+     */
     private static void clearConsole(){
         try
         {
@@ -299,6 +302,11 @@ public class Match {
         }
     }
 
+    /**
+     * Displays Round Header.
+     *
+     * @param roundNum Current Round Number.
+     */
     private void generateRoundTitle(int roundNum)
     {
         ArrayList<String> sRound = new ArrayList<>();
@@ -376,6 +384,12 @@ public class Match {
         windowContent = roundTitle;
     }
 
+    /**
+     * Generates ASCII art stylized number from given integer.
+     *
+     * @param requestedNum Integer to be stylized
+     * @return ArrayList containing stylized Integer
+     */
     private ArrayList<String> generateRoundNumber(int requestedNum)
     {
         Map<Integer, ArrayList<String>> oneDigitNums = new HashMap<>();
@@ -500,7 +514,6 @@ public class Match {
 
         if(digits.size() > 1)
         {
-            //String temp = new String();
             int count = 0;
             for (String s : oneDigitNums.get(digits.get(0)))
             {
@@ -522,6 +535,9 @@ public class Match {
         }
     }
 
+    /**
+     * This function prompts the user to press the ENTER key to proceed
+     */
     private void promptEnterKey(){
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);

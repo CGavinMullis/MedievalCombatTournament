@@ -2,10 +2,16 @@ package com.github.mct.ui;
 
 import com.github.mct.combat.Fighter;
 import com.github.mct.tournament.Match;
-
 import java.util.*;
-
 import static java.lang.StrictMath.abs;
+
+/**
+ * Comments on its associated match by comparing fighter stats,
+ * and reacting to key events during combat
+ *
+ * @author Gregory Lofink
+ *
+ */
 
 public class Jester {
 
@@ -25,6 +31,10 @@ public class Jester {
 
     private boolean speedDiff;
 
+    /**
+     * Private Enumerated Type for Jester's Mood
+     *
+     */
     private enum jesterMood {
         HAPPY,
         GRUMPY,
@@ -33,6 +43,10 @@ public class Jester {
         SMUG;
     }
 
+    /**
+     * Private Enumerated Type for physicalAttributes
+     *
+     */
     private enum physicalAttribute
     {
         STRENGTH,
@@ -40,6 +54,10 @@ public class Jester {
         SPEED;
     }
 
+    /**
+     * Private Enumerated Type for comment types
+     *
+     */
     private enum commentType
     {
         STRENGTH,
@@ -53,6 +71,13 @@ public class Jester {
         TAKEDOWNFAV;
     }
 
+    /**
+     * Constructor for Jester Class
+     *
+     * Attaches Match that initialized it
+     *
+     * @param m Match that created this Jester
+     */
     public Jester(Match m) {
         MAX_WIDTH = 150;
         emptySpace = new String(new char[MAX_WIDTH - 3]).replace("\0", " ");
@@ -60,6 +85,9 @@ public class Jester {
     }
 
 
+    /**
+     * Called by Match at the beginning of Combat. Prints Jester's commentary on his fav fighter based on stats
+     */
     public void CommentOnStart() {
         physicalAttribute comparisonPoint;
         Fighter f1 = currMatch.getFighter1();
@@ -129,6 +157,9 @@ public class Jester {
         System.out.println(comment);
     }
 
+    /**
+     * Called by Match whenever a fighter gets bloodied. Prints Jester's commentary on a fighter going below half health.
+     */
     public void CommentOnMiddle(Fighter f) {
         if (f == favFighter) {
             System.out.println(generateComment(getRandomComment(f,f,commentType.FAVBLOODIED), jesterMood.SHOCKED));
@@ -138,10 +169,16 @@ public class Jester {
         }
     }
 
+    /**
+     * Called by Match whenever both fighter gets bloodied. Prints Jester's commentary on both fighters going below half health.
+     */
     public void CommentOnMiddle(Fighter f1, Fighter f2) {
         System.out.println(generateComment(getRandomComment(f1,f2,commentType.DOUBLEBLOODIED), jesterMood.SHOCKED));
     }
 
+    /**
+     * Called by Match whenever a fighter goes down. Prints Jester's commentary on fighters going down.
+     */
     public void CommentOnEnd(Fighter f) {
         if (f == favFighter) {
             System.out.println(generateComment(getRandomComment(f,f,commentType.TAKEDOWNFAV), jesterMood.GRUMPY));
@@ -152,10 +189,21 @@ public class Jester {
         }
     }
 
+    /**
+     * Called by Match whenever both fighters go down. Prints Jester's commentary on both fighters going down.
+     */
     public void CommentOnEnd(Fighter f1, Fighter f2) {
         System.out.println(generateComment(getRandomComment(f1,f2,commentType.DOUBLEBLOODIED), jesterMood.SMUG));
     }
 
+    /**
+     * Generates a comment for the Jester.
+     *
+     * @param content String that will be used as textual content for the comment.
+     * @param mood Enum Type that specifies which mood that the Jester is in while making the comment.
+     *
+     * @return String comment of textual content combined with relevant Jester face.
+     */
     private String generateComment(String content, jesterMood mood)
     {
         ArrayList<String> jesterHead;
@@ -219,6 +267,14 @@ public class Jester {
         return comment;
     }
 
+    /**
+     * Used to split a string to equal specified sizes.
+     *
+     * @param text String to split.
+     * @param size Size of desired split pieces.
+     *
+     * @return List of string pieces.
+     */
     private static List<String> splitEqually(String text, int size) {
         List<String> ret = new ArrayList<String>((text.length() + size - 1) / size);
 
@@ -228,11 +284,21 @@ public class Jester {
         return ret;
     }
 
+    /**
+     * Returns a random physical attribute from the physicalAttribute Enum values.
+     *
+     * @return Random physical attribute.
+     */
     private static physicalAttribute getRandomAttribute() {
         Random random = new Random();
         return physicalAttribute.values()[random.nextInt(physicalAttribute.values().length)];
     }
 
+    /**
+     * Returns a random physical attribute from the physicalAttribute Enum values
+     *
+     * @return ArrayList containing a Jester face of specified mood.
+     */
     private ArrayList<String> generateJesterFace(jesterMood mood)
     {
         Map<jesterMood, ArrayList<String>> jesterFaces = new HashMap<>();
@@ -345,6 +411,14 @@ public class Jester {
         return jesterFaces.get(mood);
     }
 
+    /**
+     * Returns a random comment from the specified category of comment types.
+     *
+     * @param fav The Jester's predicted winner.
+     * @param nfav The Jester's predicted loser.
+     * @param type The category of comment to return.
+     * @return Random comment based on comment type.
+     */
     private String getRandomComment(Fighter fav, Fighter nfav, commentType type) {
         ArrayList<String> strComments = new ArrayList<>();
         ArrayList<String> rComments = new ArrayList<>();
@@ -359,10 +433,13 @@ public class Jester {
 
         // Strength based comments
         strComments.add(fav.getName() + " seems awful strong, I'm not so sure about " + nfav.getName() + "...");
+        strComments.add(fav.getName() + " is bringing the gun show! " + nfav.getName() + " on the other hand looks like they could use a sandwhich!");
         // Reach based comments
         rComments.add(nfav.getName() + " has tiny little arms! They'll be no match for the reach on " + fav.getName() + "!");
+        rComments.add(fav.getName() + " must be 8ft tall!"  + "Too bad " + fav.getName() + "is a midget!");
         // Speed based comments
         sComments.add(fav.getName() + " is incredibly quick on their feet! " + nfav.getName() + " on the other hand just got my joke from last week...");
+        sComments.add(fav.getName() + " must be the fastest fighter alive! " + " Well at least next to " + nfav.getName() + "anyway...");
         // Bloodied based comments
         bComments.add(fav.getName() + " got Bloodied!");
         // FavBloodied based comments

@@ -103,31 +103,6 @@ public class SubTournament {
     }
 
 
-    /*/**
-     * Constructor for a semi-final or final SubTournament
-     *
-     * @param fighterA The first Fighter of the SubTournament
-     * @param fighterB The second Fighter of the SubTournament
-     */
-    /*
-    public SubTournament(Fighter fighterA, Fighter fighterB)
-    {
-        //Set Number of Matches to 1
-        this.numberOfMatches = 1;
-
-        //Number of Rounds
-        j = 0;
-
-        //Set Archetype to Wild
-        this.archetype = TournamentArchetype.WILD;
-
-        //Create ArrayList of Matches
-        this.matches = new ArrayList<>();
-
-        //Create ArrayList of ArrayList of Matches.
-        this.subMatches = new ArrayList<>();
-    } */
-
     /**
      * This function determines the winner of a SubTournament and returns a Fighter
      *
@@ -166,96 +141,6 @@ public class SubTournament {
 
         return winners.get(winners.size()-1);
 
-
-
-
-
-
-        //If Not the Final Match
-    /*    if(numberOfMatches != 1)
-        {
-            //Create numberOfMatches Matches with TournamentArchetype
-            for (int i = 0; i < numberOfMatches; i++)
-            {
-                //Create New Match with TournamentArchetype
-                Match temp = new Match(this.archetype);
-
-                //Play Match
-                temp.playMatch();
-
-                //Add Match to list
-                this.matches.add(temp);
-            }
-
-            //Add Current Matches to subMatches list
-            this.subMatches.add(matches);
-
-            //Until we are left with 1 match
-            while (numberOfMatches != 1)
-            {
-                //Create new List of Matches
-                this.matches = new ArrayList<>();
-
-                //Iterate Across Previous Matches
-                for (int i = 0; i < numberOfMatches; i += 2)
-                {
-                    //Get Winner from Match i & Match i+2
-                    Match temp = new Match(subMatches.get(j).get(i).determineWinner(), subMatches.get(j).get(i + 1).determineWinner());
-
-                    //Play Match
-                    temp.playMatch();
-
-                    //Add Match to List
-                    this.matches.add(temp);
-                }
-
-                //Add Matches to subMatches
-                this.subMatches.add(this.matches);
-
-                //New Number of Matches
-                numberOfMatches = numberOfMatches / 2;
-
-                //New Index of Previous Matches
-                j++;
-            }
-
-            //Final Match
-            this.matches = new ArrayList<>();
-
-            //Get Winner from Match 0 and Match 1
-            Match temp = new Match(subMatches.get(j).get(0).determineWinner(), subMatches.get(j).get(1).determineWinner());
-
-            //Play Match
-            temp.playMatch();
-
-            //Add Match to List
-            this.matches.add(temp);
-
-            //New Index of Previous Matches
-            j++;
-        }
-
-        //There is only 1 Match
-        else
-        {
-            //Final Match
-            this.matches = new ArrayList<>();
-
-            //Create Random Fighters
-            Match temp = new Match(this.archetype);
-
-            //Play Match
-            temp.playMatch();
-
-            //Add Match to List
-            this.matches.add(temp);
-        }
-
-        //Add Last Match to SubMatches
-        this.subMatches.add(matches);
-
-        //Return Winner from Final Match
-        return this.subMatches.get(j).get(0).determineWinner(); */
     }
 
     /**
@@ -315,16 +200,15 @@ public class SubTournament {
                 temp = temp.substring(0,MAX_WIDTH-6);
             }
             temp = stringInsert(lineTemplate, temp, MAX_WIDTH/2 - (temp.length()/2)-1);
-
-            //temp = stringInsert(lineTemplate, f1Name.get(i), MAX_WIDTH/4 - (f1Name.get(i).length()/2)-1);
-            //temp = stringInsert(temp, vs.get(i), MAX_WIDTH/2 - (vs.get(i).length()/2)-1);
-            //temp = stringInsert(temp, f2Name.get(i), (MAX_WIDTH - MAX_WIDTH/4) - (f2Name.get(i).length()/2)-1);
             lineUp += temp;
         }
         this.windowContent = lineUp;
         print();
     }
 
+    /**
+     * This function prints the contents of the menu to the terminal
+     */
     private void print()
     {
         String content;
@@ -337,6 +221,15 @@ public class SubTournament {
         System.out.print(content);
     }
 
+    /**
+     * This function inserts the insert String into the target String at the position specified by position.
+     *
+     * @param target String being inserted into.
+     * @param insert String to be inserted into target String.
+     * @param position Integer position specifying where to insert the insert String into the target String.
+     *
+     * @return Returns target string with insertion from insert string
+     */
     protected String stringInsert(String target, String insert, int position)
     {
         int length = target.length();
@@ -353,12 +246,18 @@ public class SubTournament {
         return builder.toString();
     }
 
+    /**
+     * This function prompts the user to press the ENTER key to proceed
+     */
     protected void promptEnterKey(){
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
     }
 
+    /**
+     * This function clears the terminal of the content currently being displayed.
+     */
     protected static void clearConsole(){
         try
         {
@@ -380,6 +279,11 @@ public class SubTournament {
         }
     }
 
+    /**
+     * This function takes a normal string and returns an ArrayList containing an ASCII art stylized version of that string.
+     *
+     * @param name
+     */
     private ArrayList<String> generateStylizedName(String name)
     {
         Map<Character, ArrayList<String>> stylizedLetters = new HashMap<>();
@@ -682,7 +586,6 @@ public class SubTournament {
 
         stylizedLetters.put('0',s0);
 
-
             int count = 0;
             for (String s : stylizedLetters.get(nameAsCharArray.get(0)))
             {
@@ -698,7 +601,5 @@ public class SubTournament {
                 count = 0;
             }
             return finalName;
-
     }
-
 }

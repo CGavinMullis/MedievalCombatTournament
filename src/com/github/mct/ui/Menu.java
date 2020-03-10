@@ -14,7 +14,7 @@ import java.util.Scanner;
  * Displays an interactive text based menu for the user
  *
  *
- * @author SirNocturne
+ * @author Gregory Lofink
  *
  */
 
@@ -63,6 +63,12 @@ public class Menu {
         }
     }
 
+    /**
+     * This function implements the singleton pattern for the Menu class.
+     *
+     * @return single_instance A pointer to the singular instance of the Menu class
+     *
+     */
     public static Menu getInstance()
     {
         if (single_instance == null)
@@ -73,7 +79,9 @@ public class Menu {
         return single_instance;
     }
 
-
+    /**
+     * This function prints the contents of the menu to the terminal
+     */
     private void print()
     {
         String content;
@@ -98,6 +106,12 @@ public class Menu {
         System.out.print(content);
     }
 
+    /**
+     * This function determines user's menu option selection and initializes the correct response.
+     *
+     * @param menu indicates which menu's options backend to load
+     *
+     */
     private void optionSelect(String menu)
     {
         Scanner in = new Scanner(System.in);
@@ -146,6 +160,9 @@ public class Menu {
         }
     }
 
+    /**
+     * This function initializes the default menu for MCT.
+     */
     private void defaultMenu()
     {
         String title;
@@ -206,6 +223,9 @@ public class Menu {
         menuOptions.add("Exit");
     }
 
+    /**
+     * This function initializes the match menu (selecting number of matches for each sub-tournament) for MCT.
+     */
     private void matchMenu()
     {
 
@@ -351,6 +371,9 @@ public class Menu {
         numMatches[3] = Integer.parseInt(selection);
     }
 
+    /**
+     * This function initializes the tournament menu (run tournament, exit) for MCT.
+     */
     private void  tournamentMenu()
     {
         currTourn.initializeTournament(numMatches);
@@ -360,6 +383,9 @@ public class Menu {
         currMenu = "tournament";
     }
 
+    /**
+     * This function generates the display of the tournament 'brackets' for MCT.
+     */
     private void genTournMap()
     {
         String map;
@@ -374,6 +400,9 @@ public class Menu {
         windowContent = map;
     }
 
+    /**
+     * This function displays the overall victor of the MCT.
+     */
     private void announceVictor(String name)
     {
         ArrayList<String> victoryMessage = new ArrayList<>();
@@ -413,6 +442,11 @@ public class Menu {
         print();
     }
 
+    /**
+     * This function takes a normal string and returns an ArrayList containing an ASCII art stylized version of that string.
+     *
+     * @param name
+     */
     private ArrayList<String> generateStylizedName(String name)
     {
         Map<Character, ArrayList<String>> stylizedLetters = new HashMap<>();
@@ -751,6 +785,10 @@ public class Menu {
         return finalName;
 
     }
+
+    /**
+     * This function clears the terminal of the content currently being displayed.
+     */
     protected static void clearConsole(){
         try
         {
@@ -772,6 +810,15 @@ public class Menu {
         }
     }
 
+    /**
+     * This function inserts the insert String into the target String at the position specified by position.
+     *
+     * @param target String being inserted into.
+     * @param insert String to be inserted into target String.
+     * @param position Integer position specifying where to insert the insert String into the target String.
+     *
+     * @return Returns target string with insertion from insert string
+     */
     protected String stringInsert(String target, String insert, int position)
     {
         int length = target.length();
@@ -788,6 +835,12 @@ public class Menu {
         return builder.toString();
     }
 
+    /**
+     * This function determines if strNum is Numeric.
+     *
+     * @param strNum String being evaluated for Numericness.
+     * @return Retruns True if strNum is Numeric, returns False otherwise.
+     */
     protected static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
@@ -800,18 +853,30 @@ public class Menu {
         return true;
     }
 
+    /**
+     * This function updates the terminal display
+     */
     private void update()
     {
         print();
         optionSelect(currMenu);
     }
 
+    /**
+     * This function prompts the user to press the ENTER key to proceed
+     */
     protected void promptEnterKey(){
         System.out.println("Press \"ENTER\" to continue...");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
     }
 
+    /**
+     * Returns True if the passed integer is NOT a power of two, Else False.
+     *
+     * @param n Value to be Checked
+     * @return Boolean value
+     */
     private boolean isNotPowerOfTwo(int n)
     {
         //0 Matches are not Valid
