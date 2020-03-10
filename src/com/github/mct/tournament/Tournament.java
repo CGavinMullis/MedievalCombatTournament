@@ -19,8 +19,14 @@ public class Tournament {
      */
     private ArrayList<SubTournament> subTournaments;
 
+    /**
+     * Matches that spawn from individual sub tournaments
+     */
     private ArrayList<Match> semiMatches;
 
+    /**
+     * Weapon Factory for creating weapons
+     */
     private WeaponFactory WF;
 
     protected int MAX_WIDTH;
@@ -166,6 +172,7 @@ public class Tournament {
 
     /**
      * Chooses name randomly from array of fantasy names
+     *
      * @return random name
      */
     private String GetRandomName()
@@ -177,6 +184,11 @@ public class Tournament {
         return names[choice];                      // return chosen name
     }
 
+    /**
+     * Returns a randomly selected Weapon Archetype
+     *
+     * @return Weapon Archetype that has been randomly selected
+     */
     private static WeaponArchetype getRandomWeaponType() {
         Random random = new Random();
         return WeaponArchetype.values()[random.nextInt(WeaponArchetype.values().length)];
