@@ -1,7 +1,7 @@
 package com.github.mct.combat;
 
-// Import Weapon Class
 import com.github.mct.combat.weapons.Weapon;
+
 
 /**
  * Fighter stores stats, weapon, and comparison functions.
@@ -55,22 +55,22 @@ public class Fighter{
      * @return if the current fighter reaches farther than the opponent fighter
      */
     public boolean LongerReachedThan(Fighter opponent){
-        return reach > opponent.getReach();
+        if (reach > opponent.getReach()) return true;
+        else return false;
     }
-
     /**
-     * Checks the speed of the current fighter against speed of opponent
-     * @param opponent the opposing fighter being compared to
-     * @return if the current fighter is faster than the opponent fighter
+     * Checks current fighter's speed score against opponent fighter's speed score.
      */
     public boolean FasterThan(Fighter opponent){
-        return speed > opponent.getSpeed();
+        if (speed > opponent.getSpeed()) return true;
+        else return false;
     }
-
     /**
-     * Accessor for fighter's strength
-     * @return strength value from 1 to 10
+     * For every point of attack of current weapon, roll a d6 and add to attack performance sum.
+     *
+     * @return sum of six sided dice rolls for every attack point on weapon
      */
+
     public int getStrength(){
         return strength;
     }
@@ -122,4 +122,5 @@ public class Fighter{
     public Weapon getWeapon(){
         return weapon;
     }
+
 }

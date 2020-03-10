@@ -13,5 +13,5 @@ import com.github.mct.combat.weapons.WeaponArchetype;
  *
  */
 public enum TournamentArchetype {
-    SHORT, MEDIUM, LONG, WILD
+    LONG, MEDIUM, SHORT, WILD
 }

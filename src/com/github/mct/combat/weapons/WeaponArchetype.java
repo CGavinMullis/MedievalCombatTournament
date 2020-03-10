@@ -7,4 +7,4 @@ package com.github.mct.combat.weapons;
  *
  * @author Elizabeth Staley
  */
-public enum WeaponArchetype{SHORT, MEDIUM, LONG}
+public enum WeaponArchetype{LONG, MEDIUM, SHORT}
