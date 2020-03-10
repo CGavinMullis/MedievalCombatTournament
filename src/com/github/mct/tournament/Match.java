@@ -301,10 +301,8 @@ public class Match {
         {
             damage++;
         }
-        fightersHP -= damage;       // subtract damage from fighter's HP
 
-
-        result = f - damage;
+        result = fightersHP - damage;
 
         while(result < 0 )
         {
