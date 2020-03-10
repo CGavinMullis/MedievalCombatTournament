@@ -14,17 +14,7 @@ import java.util.*;
  */
 public class Match {
 
-    private Fighter fighter1;       // both fighters for the match
-    private Fighter fighter2;       // both fighters for the match
-    private Jester jester;          // jester for commentary
-
-
-    private int f1HP;
-
-    private int f2HP;
-
     private int f1Strike;
-
     private int f2Strike;
 
     private int f1AttackAdvantage;
@@ -32,18 +22,17 @@ public class Match {
     private int f2AttackAdvantage;
     private int f2DefenseAdvantage;
 
+    private Fighter fighter1, fighter2;     // fighters for the match
+    private Jester jester;                  // jester for commentary
+    private int f1HP, f2HP;                 // fighter's health points
+
+    // for output formatting
     protected int MAX_WIDTH;
-
     protected String emptySpace;
-
     protected String lineTemplate;
-
     protected String windowBorder;
-
     protected String windowDivider;
-
     protected String windowContent;
-
 
     /**
      * Overloaded constructor for semifinals and finals, using winners from previous matches
@@ -68,6 +57,7 @@ public class Match {
      */
     public Fighter PlayMatch()
     {
+
         f1AttackAdvantage = 0;
         f1DefenseAdvantage = 0;
         f2AttackAdvantage = 0;
@@ -75,35 +65,34 @@ public class Match {
         int roundNum = 1;
         f1HP = 10;
         f2HP = 10;
-        boolean f1Bloodied = false;
+        boolean f1Bloodied = false;     // neither fighter bloodied
         boolean f2Bloodied = false;
 
-
-        if (fighter1.StrongerThan(fighter2))
-        {
+        // check strengths and give the stronger fighter an attack advantage
+        if (fighter1.StrongerThan(fighter2)){
             f1AttackAdvantage++;
         }
-        else if (fighter2.StrongerThan(fighter1))
-        {
+        else if (fighter2.StrongerThan(fighter1)){
             f2AttackAdvantage++;
         }
-        if (fighter1.LongerReachedThan(fighter2))
-        {
+        // check reaches and give the farther reached fighter a defense advantage
+        if (fighter1.LongerReachedThan(fighter2)){
             f1DefenseAdvantage++;
         }
-        else if(fighter2.LongerReachedThan(fighter1))
-        {
+        else if(fighter2.LongerReachedThan(fighter1)){
             f2DefenseAdvantage++;
         }
-        if (fighter1.FasterThan(fighter2) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
-        {
-            f1AttackAdvantage++;
-            f1DefenseAdvantage++;
-        }
-        else if(fighter2.FasterThan(fighter1) && fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype())
-        {
-            f2AttackAdvantage++;
-            f2DefenseAdvantage++;
+        // only if the fighters have different types of weapons
+        if(fighter1.getWeapon().getArchetype() != fighter2.getWeapon().getArchetype()){
+            // check speeds and give the faster fighter an attack and defense advantage
+            if (fighter1.FasterThan(fighter2)){
+                f1AttackAdvantage++;
+                f1DefenseAdvantage++;
+            }
+            else if(fighter2.FasterThan(fighter1)){
+                f2AttackAdvantage++;
+                f2DefenseAdvantage++;
+            }
         }
 
         generateRoundTitle(roundNum);
@@ -114,6 +103,7 @@ public class Match {
 
         while(true)
         {
+
             f2Strike = rollD6(fighter2.GetAttackPerformance()+f2AttackAdvantage) - rollD6(fighter1.GetDefensePerformance()+f1DefenseAdvantage);
             f1Strike = rollD6(fighter1.GetAttackPerformance()+f1AttackAdvantage) - rollD6(fighter2.GetDefensePerformance()+f2DefenseAdvantage);
             f2HP = strikeFighter (f2HP,f1Strike);
@@ -140,11 +130,11 @@ public class Match {
                     print();
                     this.jester.CommentOnStart();
                     promptEnterKey();
-                    continue;
+                    continue;       // start another round
                 }
-                this.jester.CommentOnEnd(fighter1);
+                this.jester.CommentOnEnd(fighter1);     // Jester comments on defeat of fighter 1
                 promptEnterKey();
-                return fighter2;
+                return fighter2;                        // fighter 2 is the winner
             }
             if(f2HP <= 0)
             {
@@ -166,8 +156,9 @@ public class Match {
                     continue;
                 }
                 this.jester.CommentOnEnd(fighter2);
+
                 promptEnterKey();
-                return fighter1;
+                return fighter1;                        // fighter 1 is the winner
             }
 
             if (f1HP <= 5 && !f1Bloodied) {
@@ -191,18 +182,26 @@ public class Match {
     }
 
     /**
-     * This function signals Jester that the match is halfway through
+     * Signals to Jester to comment on the middle of the match
+     * @param fighter which fighter was bloodied
      */
-    private void SignalMiddleToJester(Fighter f)
-    {
-        this.jester.CommentOnMiddle(f);
+    private void SignalMiddleToJester(Fighter fighter){
+        this.jester.CommentOnMiddle(fighter);
     }
 
-    private void SignalMiddleToJester(Fighter f1, Fighter f2)
+    /**
+     * Signals to Jester to comment on the middle of the match
+     * @param fighter1 this fighter was bloodied
+     * @param fighter2 this fighter was also bloodied
+     */
+    private void SignalMiddleToJester(Fighter fighter1, Fighter fighter2)
     {
-        this.jester.CommentOnMiddle(f1,f2);
+        this.jester.CommentOnMiddle(fighter1,fighter2);
     }
 
+    /**
+     * For output formatting
+     */
     private void print()
     {
         String content;
@@ -217,6 +216,13 @@ public class Match {
         System.out.print(content);
     }
 
+    /**
+     * For output formatting
+     * @param target
+     * @param insert
+     * @param position
+     * @return
+     */
     protected String stringInsert(String target, String insert, int position)
     {
         StringBuilder builder = new StringBuilder(target);
@@ -230,27 +236,47 @@ public class Match {
         return builder.toString();
     }
 
-
+    /**
+     * Accessor for first fighter
+     * @return fighter1
+     */
     public Fighter getFighter1() {
         return fighter1;
     }
 
+    /**
+     * Accessor for second fighter
+     * @return fighter2
+     */
     public Fighter getFighter2() {
         return fighter2;
     }
 
-    public void setFighter1(Fighter f)
-    {
-        fighter1 = f;
+    /**
+     * Mutator for first fighter
+     * @param fighter to be first fighter
+     */
+    public void setFighter1(Fighter fighter){
+        fighter1 = fighter;
     }
 
-    public void setFighter2(Fighter f)
+    /**
+     * Mutator for second fighter
+     * @param fighter to be second fighter
+     */
+    public void setFighter2(Fighter fighter)
     {
-        fighter2 = f;
+        fighter2 = fighter;
     }
 
+    /**
+     * Rolls a six-sided die by generating random numbers between 1 and 6
+     * @param rolls how many dice to roll
+     * @return the sum of the dice rolls
+     */
     private int rollD6(int rolls)
     {
+
         Random r;
         int sum = 0;
         for (int i = 0 ; i < rolls ; i++)
@@ -261,13 +287,22 @@ public class Match {
         return sum;
     }
 
-    private int strikeFighter(int f, int damage)
+    /**
+     * Decrement fighter's HP according to damage taken
+     * @param fightersHP the fighter's HP
+     * @param damage the damage taken
+     * @return the fighter's new HP
+     */
+    private int strikeFighter(int fightersHP, int damage)
     {
+
         int result;
         while(damage < 0)
         {
             damage++;
         }
+        fightersHP -= damage;       // subtract damage from fighter's HP
+
 
         result = f - damage;
 
@@ -303,6 +338,7 @@ public class Match {
     }
 
     /**
+
      * Displays Round Header.
      *
      * @param roundNum Current Round Number.
@@ -385,6 +421,7 @@ public class Match {
     }
 
     /**
+
      * Generates ASCII art stylized number from given integer.
      *
      * @param requestedNum Integer to be stylized
